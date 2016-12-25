@@ -128,13 +128,13 @@ type {{$key}} struct {
 {{end -}}
 
 {{if .RootFunction -}}
-func ThisApplication() {{.RootFunction.Return}} {
+func {{.RootFunction.Name}}() {{.RootFunction.Return}} {
 	unknown, err := oleutil.CreateObject("{{.Object}}")
 	if err != nil {
 		return nil
 	}
 	obj, err := unknown.QueryInterface(ole.IID_IDispatch)
-	return &Application{
+	return &{{.RootFunction.RetUserObj}}{
 		{{.BasicObj}}: {{.BasicObj}}{Obj: obj, Err: err},
 	}
 }

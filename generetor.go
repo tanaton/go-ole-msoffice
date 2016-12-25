@@ -29,6 +29,12 @@ type Function struct {
 	Return    string      `json:",omitempty"`
 }
 
+type FunctionRoot struct {
+	Name       string `json:",omitempty"`
+	Return     string `json:",omitempty"`
+	RetUserObj string `json:",omitempty"`
+}
+
 type PropertyFunc struct {
 	Get *Function `json:",omitempty"`
 	Set *Function `json:",omitempty"`
@@ -43,7 +49,7 @@ type Application struct {
 	Package      string
 	Object       string
 	Const        map[string]int64
-	RootFunction *Function
+	RootFunction *FunctionRoot
 	Basic        FunctionMap
 	Child        map[string]FunctionMap
 }
@@ -53,7 +59,7 @@ type PackageData struct {
 	Package      string
 	Object       string
 	BasicObj     string
-	RootFunction *Function
+	RootFunction *FunctionRoot
 	Const        map[string]int64
 	Child        map[string]FunctionMap
 }
@@ -117,6 +123,10 @@ func Generate(in, outroot string) error {
 	if a.Package == "" {
 		return errors.New("error:" + in + " - json => Packageが設定されてません。")
 	}
+	if a.RootFunction == nil {
+		return errors.New("error:" + in + " - json => RootFunctionが設定されてません。")
+	}
+	a.RootFunction.RetUserObj = UserObjectDereference(a.RootFunction.Return)
 	pd := PackageData{}
 	pd.buf = &bytes.Buffer{}
 	pd.Package = strings.ToLower(a.Package)

@@ -1456,6 +1456,7 @@
 		"XlChartElementPositionCustom": -4114
 	},
 	"RootFunction": {
+		"Name": "ThisApplication",
 		"Return": "*Application"
 	},
 	"Basic": {
