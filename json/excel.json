@@ -1472,13 +1472,16 @@
 			},
 			"Cells": {
 				"Get": {
-					"Arguments": [{"Type": "int"}, {"Type": "int"}],
+					"Arguments": [
+						{"Type": "int"},
+						{"Type": "int"}
+					],
 					"Return": "*Range"
 				}
 			},
 			"End": {
 				"Get": {
-					"Arguments": [{"Type": "int"}, {"Type": "int"}],
+					"Arguments": [{"Type": "int"}],
 					"Return": "*Range"
 				}
 			},
@@ -1684,7 +1687,7 @@
 				"SeriesCollection": {
 					"Get": {
 						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "bool"
+						"Return": "*Series"
 					}
 				},
 				"HasTitle": {
