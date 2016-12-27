@@ -8,13 +8,16 @@ JScriptでExcelを操作する感覚に近いものを目指しています。
 
 ## Demo
 - [Excelファイルの名前の定義を削除する](https://github.com/tanaton/go-ole-msoffice/blob/master/example/excel/namedelete.go)
+- [Outlookの予定表の情報を取得する](https://github.com/tanaton/go-ole-msoffice/blob/master/example/outlook/calendar_read.go)
 
 ## Install
 ### Excelの場合
 `go get github.com/tanaton/go-ole-msoffice/excel`
 
+### Outlookの場合
+`go get github.com/tanaton/go-ole-msoffice/outlook`
+
 ## TODO
-- Outlookの予定表を扱えるようにする
 - （長期的には）MSDNライブラリをクロールしてある程度自動生成する
 
 ## Licence
