@@ -74,3 +74,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 example/excel/data/namedelete_test_output.xlsx
+*.swp
