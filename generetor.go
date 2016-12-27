@@ -46,13 +46,18 @@ type FunctionMap struct {
 	Method   map[string]*Function     `json:",omitempty"`
 }
 
+type ObjectClass struct {
+	FunctionMap
+	TypeConst string `json:",omitempty"`
+}
+
 type Application struct {
 	Package      string
 	Object       string
 	Const        map[string]int64
 	RootFunction *FunctionRoot
 	Basic        FunctionMap
-	Child        map[string]FunctionMap
+	Child        map[string]ObjectClass
 }
 
 type PackageData struct {
@@ -62,7 +67,7 @@ type PackageData struct {
 	BasicObj     string
 	RootFunction *FunctionRoot
 	Const        map[string]int64
-	Child        map[string]FunctionMap
+	Child        map[string]ObjectClass
 }
 
 type FunctionData struct {

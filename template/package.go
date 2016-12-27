@@ -24,9 +24,9 @@ type Merger interface {
 	Merge(*ole.VARIANT, error) {{.BasicObj}}
 }
 
-type Operation interface {
-	IDispatcher
-	Merger
+type Cast interface {
+	Extends() {{.BasicObj}}
+	GetClass() int
 }
 
 func ToString(v *ole.VARIANT, err error) (ret string) {
@@ -55,9 +55,15 @@ func ToTime(v *ole.VARIANT, err error) (t time.Time) {
 	return
 }
 
-type Error []error
+type Error string
 
-func (e *Error) Error() (ret string) {
+func (e Error) Error() string {
+	return string(e)
+}
+
+type ErrorArray []error
+
+func (e *ErrorArray) Error() (ret string) {
 	for _, it := range *e {
 		if it != nil {
 			ret += it.Error()
@@ -67,11 +73,20 @@ func (e *Error) Error() (ret string) {
 }
 
 func MultiError(e error, es ...error) error {
-	var ee Error
-	if len(es) <= 0 {
-		ee = Error([]error{e})
+	var ee ErrorArray
+	if it, ok := e.(*ErrorArray); ok {
+		ee = *it
 	} else {
-		ee = Error(append([]error{e}, es...))
+		ee = ErrorArray([]error{e})
+	}
+	if len(es) > 0 {
+		ees := make([]error, 0, len(es)+1)
+		for _, it := range es {
+			if _, ok := it.(*ErrorArray); ok == false {
+				ees = append(ees, it)
+			}
+		}
+		ee = ErrorArray(append([]error(ee), ees...))
 	}
 	return &ee
 }
@@ -82,42 +97,50 @@ type {{.BasicObj}} struct {
 	children []{{.BasicObj}}
 }
 
-func (e *{{.BasicObj}}) Merge(obj *ole.VARIANT, err error) {{.BasicObj}} {
-	ce := {{.BasicObj}}{
+func (a *{{.BasicObj}}) Merge(obj *ole.VARIANT, err error) {{.BasicObj}} {
+	b := {{.BasicObj}}{
 		Obj: obj.ToIDispatch(),
 		Err: err,
 	}
-	e.children = append(e.children, ce)
-	if e.Err == nil {
+	a.children = append(a.children, b)
+	if a.Err == nil {
 		if err != nil {
-			e.Err = err
+			a.Err = err
 		}
 	} else {
 		if err != nil {
-			e.Err = MultiError(e.Err, err)
+			a.Err = MultiError(a.Err, err)
 		}
 	}
-	return ce
+	return b
 }
-func (e *{{.BasicObj}}) IDispatch() *ole.IDispatch {
-	return e.Obj
+func (a *{{.BasicObj}}) Extends() {{.BasicObj}} {
+	b := {{.BasicObj}}{
+		Obj: a.Obj,
+		Err: a.Err,
+	}
+	a.children = append(a.children, b)
+	return b
 }
-func (e *{{.BasicObj}}) Error() (ret string) {
-	if e.Err != nil {
-		ret = e.Err.Error()
+func (a *{{.BasicObj}}) IDispatch() *ole.IDispatch {
+	return a.Obj
+}
+func (a *{{.BasicObj}}) Error() (ret string) {
+	if a.Err != nil {
+		ret = a.Err.Error()
 	}
 	return
 }
-func (e *{{.BasicObj}}) Release() {
-	if e.children != nil {
-		for i, _ := range e.children {
-			e.children[i].Release()
+func (a *{{.BasicObj}}) Release() {
+	if a.children != nil {
+		for i, _ := range a.children {
+			a.children[i].Release()
 		}
-		e.children = nil
+		a.children = nil
 	}
-	if e.Obj != nil {
-		e.Obj.Release()
-		e.Obj = nil
+	if a.Obj != nil {
+		a.Obj.Release()
+		a.Obj = nil
 	}
 }
 
@@ -125,6 +148,16 @@ func (e *{{.BasicObj}}) Release() {
 type {{$key}} struct {
 	{{$this.BasicObj}}
 }
+{{if ne $it.TypeConst "" -}}
+func {{$key}}Cast(a Cast) (*{{$key}}, error) {
+	if a.GetClass() != {{$it.TypeConst}} {
+		return nil, Error("Cast error : {{$key}}")
+	}
+	return &{{$key}}{
+		{{$this.BasicObj}}: a.Extends(),
+	}, nil
+}
+{{end -}}
 {{end -}}
 
 {{if .RootFunction -}}

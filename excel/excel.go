@@ -1471,9 +1471,9 @@ type Merger interface {
 	Merge(*ole.VARIANT, error) Excel
 }
 
-type Operation interface {
-	IDispatcher
-	Merger
+type Cast interface {
+	Extends() Excel
+	GetClass() int
 }
 
 func ToString(v *ole.VARIANT, err error) (ret string) {
@@ -1502,9 +1502,15 @@ func ToTime(v *ole.VARIANT, err error) (t time.Time) {
 	return
 }
 
-type Error []error
+type Error string
 
-func (e *Error) Error() (ret string) {
+func (e Error) Error() string {
+	return string(e)
+}
+
+type ErrorArray []error
+
+func (e *ErrorArray) Error() (ret string) {
 	for _, it := range *e {
 		if it != nil {
 			ret += it.Error()
@@ -1514,11 +1520,20 @@ func (e *Error) Error() (ret string) {
 }
 
 func MultiError(e error, es ...error) error {
-	var ee Error
-	if len(es) <= 0 {
-		ee = Error([]error{e})
+	var ee ErrorArray
+	if it, ok := e.(*ErrorArray); ok {
+		ee = *it
 	} else {
-		ee = Error(append([]error{e}, es...))
+		ee = ErrorArray([]error{e})
+	}
+	if len(es) > 0 {
+		ees := make([]error, 0, len(es)+1)
+		for _, it := range es {
+			if _, ok := it.(*ErrorArray); ok == false {
+				ees = append(ees, it)
+			}
+		}
+		ee = ErrorArray(append([]error(ee), ees...))
 	}
 	return &ee
 }
@@ -1529,42 +1544,50 @@ type Excel struct {
 	children []Excel
 }
 
-func (e *Excel) Merge(obj *ole.VARIANT, err error) Excel {
-	ce := Excel{
+func (a *Excel) Merge(obj *ole.VARIANT, err error) Excel {
+	b := Excel{
 		Obj: obj.ToIDispatch(),
 		Err: err,
 	}
-	e.children = append(e.children, ce)
-	if e.Err == nil {
+	a.children = append(a.children, b)
+	if a.Err == nil {
 		if err != nil {
-			e.Err = err
+			a.Err = err
 		}
 	} else {
 		if err != nil {
-			e.Err = MultiError(e.Err, err)
+			a.Err = MultiError(a.Err, err)
 		}
 	}
-	return ce
+	return b
 }
-func (e *Excel) IDispatch() *ole.IDispatch {
-	return e.Obj
+func (a *Excel) Extends() Excel {
+	b := Excel{
+		Obj: a.Obj,
+		Err: a.Err,
+	}
+	a.children = append(a.children, b)
+	return b
 }
-func (e *Excel) Error() (ret string) {
-	if e.Err != nil {
-		ret = e.Err.Error()
+func (a *Excel) IDispatch() *ole.IDispatch {
+	return a.Obj
+}
+func (a *Excel) Error() (ret string) {
+	if a.Err != nil {
+		ret = a.Err.Error()
 	}
 	return
 }
-func (e *Excel) Release() {
-	if e.children != nil {
-		for i, _ := range e.children {
-			e.children[i].Release()
+func (a *Excel) Release() {
+	if a.children != nil {
+		for i, _ := range a.children {
+			a.children[i].Release()
 		}
-		e.children = nil
+		a.children = nil
 	}
-	if e.Obj != nil {
-		e.Obj.Release()
-		e.Obj = nil
+	if a.Obj != nil {
+		a.Obj.Release()
+		a.Obj = nil
 	}
 }
 
@@ -1618,65 +1641,9 @@ func ThisApplication() *Application {
 		Excel: Excel{Obj: obj, Err: err},
 	}
 }
-func (a *Excel) GetUnion(a0 ...*Range) *Range {
-	av := make([]interface{}, len(a0))
-	for i, it := range a0 {
-		av[i] = it.Obj
-	}
-	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Union", av...)),
-	}
-}
-func (a *Excel) GetVisible() bool {
-	v, err := a.Obj.GetProperty("Visible")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *Excel) SetVisible(a0 bool) {
-	v, err := a.Obj.PutProperty("Visible", a0)
-	a.Merge(v, err)
-}
-func (a *Excel) GetCreator() int {
-	v, err := a.Obj.GetProperty("Creator")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *Excel) GetCount() int {
-	v, err := a.Obj.GetProperty("Count")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *Excel) GetColumns(a0 ...interface{}) *Range {
-	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Columns", a0...)),
-	}
-}
 func (a *Excel) GetEnd(a0 int) *Range {
 	return &Range{
 		Excel: a.Merge(a.Obj.GetProperty("End", a0)),
-	}
-}
-func (a *Excel) GetName() string {
-	v, err := a.Obj.GetProperty("Name")
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *Excel) SetName(a0 string) {
-	v, err := a.Obj.PutProperty("Name", a0)
-	a.Merge(v, err)
-}
-func (a *Excel) GetRange(a0 ...*Range) *Range {
-	av := make([]interface{}, len(a0))
-	for i, it := range a0 {
-		av[i] = it.Obj
-	}
-	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Range", av...)),
-	}
-}
-func (a *Excel) GetCells(a0 int, a1 int) *Range {
-	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Cells", a0, a1)),
 	}
 }
 func (a *Excel) GetValue() *ole.VARIANT {
@@ -1688,9 +1655,65 @@ func (a *Excel) SetValue(a0 ...interface{}) {
 	v, err := a.Obj.PutProperty("Value", a0...)
 	a.Merge(v, err)
 }
+func (a *Excel) GetName() string {
+	v, err := a.Obj.GetProperty("Name")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Excel) SetName(a0 string) {
+	v, err := a.Obj.PutProperty("Name", a0)
+	a.Merge(v, err)
+}
+func (a *Excel) GetVisible() bool {
+	v, err := a.Obj.GetProperty("Visible")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Excel) SetVisible(a0 bool) {
+	v, err := a.Obj.PutProperty("Visible", a0)
+	a.Merge(v, err)
+}
 func (a *Excel) GetApplication() *Application {
 	return &Application{
 		Excel: a.Merge(a.Obj.GetProperty("Application")),
+	}
+}
+func (a *Excel) GetCount() int {
+	v, err := a.Obj.GetProperty("Count")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Excel) GetColumns(a0 ...interface{}) *Range {
+	return &Range{
+		Excel: a.Merge(a.Obj.GetProperty("Columns", a0...)),
+	}
+}
+func (a *Excel) GetUnion(a0 ...*Range) *Range {
+	av := make([]interface{}, len(a0))
+	for i, it := range a0 {
+		av[i] = it.Obj
+	}
+	return &Range{
+		Excel: a.Merge(a.Obj.GetProperty("Union", av...)),
+	}
+}
+func (a *Excel) GetCreator() int {
+	v, err := a.Obj.GetProperty("Creator")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Excel) GetCells(a0 int, a1 int) *Range {
+	return &Range{
+		Excel: a.Merge(a.Obj.GetProperty("Cells", a0, a1)),
+	}
+}
+func (a *Excel) GetRange(a0 ...*Range) *Range {
+	av := make([]interface{}, len(a0))
+	for i, it := range a0 {
+		av[i] = it.Obj
+	}
+	return &Range{
+		Excel: a.Merge(a.Obj.GetProperty("Range", av...)),
 	}
 }
 func (a *Excel) CheckSpelling(a0 ...interface{}) bool {
@@ -1703,28 +1726,128 @@ func (a *Excel) Evaluate(a0 string) *Range {
 		Excel: a.Merge(a.Obj.CallMethod("Evaluate", a0)),
 	}
 }
-func (a *Worksheet) GetComments() *Comment {
-	return &Comment{
-		Excel: a.Merge(a.Obj.GetProperty("Comments")),
+func (a *Workbook) GetWorksheets(a0 ...interface{}) *Worksheet {
+	return &Worksheet{
+		Excel: a.Merge(a.Obj.GetProperty("Worksheets", a0...)),
 	}
 }
-func (a *Worksheet) GetOutline() *Outline {
+func (a *Workbook) GetNames(a0 ...interface{}) *Name {
+	return &Name{
+		Excel: a.Merge(a.Obj.GetProperty("Names", a0...)),
+	}
+}
+func (a *Workbook) GetPath() string {
+	v, err := a.Obj.GetProperty("Path")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Workbook) GetFullName() string {
+	v, err := a.Obj.GetProperty("FullName")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Workbook) SetPassword(a0 string) {
+	v, err := a.Obj.PutProperty("Password", a0)
+	a.Merge(v, err)
+}
+func (a *Workbook) GetHasPassword() bool {
+	v, err := a.Obj.GetProperty("HasPassword")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Workbook) GetPrecisionAsDisplayed() bool {
+	v, err := a.Obj.GetProperty("PrecisionAsDisplayed")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Workbook) SetPrecisionAsDisplayed(a0 bool) {
+	v, err := a.Obj.PutProperty("PrecisionAsDisplayed", a0)
+	a.Merge(v, err)
+}
+func (a *Workbook) GetWorkbooks(a0 ...interface{}) *Workbook {
+	return &Workbook{
+		Excel: a.Merge(a.Obj.GetProperty("Workbooks", a0...)),
+	}
+}
+func (a *Workbook) Activate() {
+	v, err := a.Obj.CallMethod("Activate")
+	a.Merge(v, err)
+}
+func (a *Workbook) Protect(a0 ...interface{}) {
+	v, err := a.Obj.CallMethod("Protect", a0...)
+	a.Merge(v, err)
+}
+func (a *Workbook) ProtectSharing(a0 ...interface{}) {
+	v, err := a.Obj.CallMethod("ProtectSharing", a0...)
+	a.Merge(v, err)
+}
+func (a *Workbook) Unprotect(a0 string) {
+	v, err := a.Obj.CallMethod("Unprotect", a0)
+	a.Merge(v, err)
+}
+func (a *Workbook) UnprotectSharing(a0 string) {
+	v, err := a.Obj.CallMethod("UnprotectSharing", a0)
+	a.Merge(v, err)
+}
+func (a *Workbook) Close() {
+	v, err := a.Obj.CallMethod("Close")
+	a.Merge(v, err)
+}
+func (a *Workbook) Open(a0 string) *Workbook {
+	return &Workbook{
+		Excel: a.Merge(a.Obj.CallMethod("Open", a0)),
+	}
+}
+func (a *Workbook) SaveAs(a0 string, a1 int) *Workbook {
+	return &Workbook{
+		Excel: a.Merge(a.Obj.CallMethod("SaveAs", a0, a1)),
+	}
+}
+func (a *Range) GetColumn() int {
+	v, err := a.Obj.GetProperty("Column")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Range) GetOutline() *Outline {
 	return &Outline{
 		Excel: a.Merge(a.Obj.GetProperty("Outline")),
 	}
 }
-func (a *Worksheet) Calculate() {
+func (a *Range) AutoFill(a0 *Range, a1 int) {
+	v, err := a.Obj.CallMethod("AutoFill", a0, a1)
+	a.Merge(v, err)
+}
+func (a *Range) AutoComplete(a0 string) string {
+	v, err := a.Obj.CallMethod("AutoComplete", a0)
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Range) Find(a0 ...interface{}) *Range {
+	return &Range{
+		Excel: a.Merge(a.Obj.CallMethod("Find", a0...)),
+	}
+}
+func (a *Range) FindNext(a0 ...interface{}) *Range {
+	return &Range{
+		Excel: a.Merge(a.Obj.CallMethod("FindNext", a0...)),
+	}
+}
+func (a *Range) FindPrevious(a0 ...interface{}) *Range {
+	return &Range{
+		Excel: a.Merge(a.Obj.CallMethod("FindPrevious", a0...)),
+	}
+}
+func (a *Range) Sort(a0 ...interface{}) {
+	v, err := a.Obj.CallMethod("Sort", a0...)
+	a.Merge(v, err)
+}
+func (a *Range) Calculate() {
 	v, err := a.Obj.CallMethod("Calculate")
 	a.Merge(v, err)
 }
-func (a *Worksheet) ChartObjects() *Chart {
-	return &Chart{
-		Excel: a.Merge(a.Obj.CallMethod("ChartObjects")),
-	}
-}
-func (a *Chart) GetChartTitle() *ChartTitle {
-	return &ChartTitle{
-		Excel: a.Merge(a.Obj.GetProperty("ChartTitle")),
+func (a *Range) AddComment(a0 ...interface{}) *Comment {
+	return &Comment{
+		Excel: a.Merge(a.Obj.CallMethod("AddComment", a0...)),
 	}
 }
 func (a *Chart) GetChart() *Chart {
@@ -1755,9 +1878,9 @@ func (a *Chart) SetHasTitle(a0 bool) {
 	v, err := a.Obj.PutProperty("HasTitle", a0)
 	a.Merge(v, err)
 }
-func (a *Chart) Add(a0 int, a1 int, a2 int, a3 int) *Chart {
-	return &Chart{
-		Excel: a.Merge(a.Obj.CallMethod("Add", a0, a1, a2, a3)),
+func (a *Chart) GetChartTitle() *ChartTitle {
+	return &ChartTitle{
+		Excel: a.Merge(a.Obj.GetProperty("ChartTitle")),
 	}
 }
 func (a *Chart) SetSourceData(a0 *Range, a1 int) *Chart {
@@ -1774,6 +1897,146 @@ func (a *Chart) Location(a0 ...interface{}) *Chart {
 	return &Chart{
 		Excel: a.Merge(a.Obj.CallMethod("Location", a0...)),
 	}
+}
+func (a *Chart) Add(a0 int, a1 int, a2 int, a3 int) *Chart {
+	return &Chart{
+		Excel: a.Merge(a.Obj.CallMethod("Add", a0, a1, a2, a3)),
+	}
+}
+func (a *Axis) GetHasMajorGridlines() bool {
+	v, err := a.Obj.GetProperty("HasMajorGridlines")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Axis) SetHasMajorGridlines(a0 bool) {
+	v, err := a.Obj.PutProperty("HasMajorGridlines", a0)
+	a.Merge(v, err)
+}
+func (a *Axis) GetHasMinorGridlines() bool {
+	v, err := a.Obj.GetProperty("HasMinorGridlines")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Axis) SetHasMinorGridlines(a0 bool) {
+	v, err := a.Obj.PutProperty("HasMinorGridlines", a0)
+	a.Merge(v, err)
+}
+func (a *Axis) GetTickLabelPosition() int {
+	v, err := a.Obj.GetProperty("TickLabelPosition")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Axis) SetTickLabelPosition(a0 int) {
+	v, err := a.Obj.PutProperty("TickLabelPosition", a0)
+	a.Merge(v, err)
+}
+func (a *Axis) GetHasTitle() bool {
+	v, err := a.Obj.GetProperty("HasTitle")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Axis) SetHasTitle(a0 bool) {
+	v, err := a.Obj.PutProperty("HasTitle", a0)
+	a.Merge(v, err)
+}
+func (a *Axis) GetAxisTitle() *AxisTitle {
+	return &AxisTitle{
+		Excel: a.Merge(a.Obj.GetProperty("AxisTitle")),
+	}
+}
+func (a *Axis) SetAxisTitle(a0 *AxisTitle) {
+	v, err := a.Obj.PutProperty("AxisTitle", a0)
+	a.Merge(v, err)
+}
+func (a *AxisTitle) GetText() string {
+	v, err := a.Obj.GetProperty("Text")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *AxisTitle) SetText(a0 string) {
+	v, err := a.Obj.PutProperty("Text", a0)
+	a.Merge(v, err)
+}
+func (a *Outline) GetAutomaticStyles() bool {
+	v, err := a.Obj.GetProperty("AutomaticStyles")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Outline) SetAutomaticStyles(a0 bool) {
+	v, err := a.Obj.PutProperty("AutomaticStyles", a0)
+	a.Merge(v, err)
+}
+func (a *Outline) GetSummaryColumn() int {
+	v, err := a.Obj.GetProperty("SummaryColumn")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Outline) SetSummaryColumn(a0 int) {
+	v, err := a.Obj.PutProperty("SummaryColumn", a0)
+	a.Merge(v, err)
+}
+func (a *Outline) GetSummaryRow() int {
+	v, err := a.Obj.GetProperty("SummaryRow")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Outline) SetSummaryRow(a0 int) {
+	v, err := a.Obj.PutProperty("SummaryRow", a0)
+	a.Merge(v, err)
+}
+func (a *Outline) ShowLevels(a0 ...interface{}) {
+	v, err := a.Obj.CallMethod("ShowLevels", a0...)
+	a.Merge(v, err)
+}
+func (a *Application) GetWorkbooks(a0 ...interface{}) *Workbook {
+	return &Workbook{
+		Excel: a.Merge(a.Obj.GetProperty("Workbooks", a0...)),
+	}
+}
+func (a *Application) GetDisplayAlerts() bool {
+	v, err := a.Obj.GetProperty("DisplayAlerts")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Application) SetDisplayAlerts(a0 bool) {
+	v, err := a.Obj.PutProperty("DisplayAlerts", a0)
+	a.Merge(v, err)
+}
+func (a *Application) GetScreenUpdating() bool {
+	v, err := a.Obj.GetProperty("ScreenUpdating")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Application) SetScreenUpdating(a0 bool) {
+	v, err := a.Obj.PutProperty("ScreenUpdating", a0)
+	a.Merge(v, err)
+}
+func (a *Application) Calculate() {
+	v, err := a.Obj.CallMethod("Calculate")
+	a.Merge(v, err)
+}
+func (a *Application) Quit() {
+	v, err := a.Obj.CallMethod("Quit")
+	a.Merge(v, err)
+}
+func (a *Worksheet) GetComments() *Comment {
+	return &Comment{
+		Excel: a.Merge(a.Obj.GetProperty("Comments")),
+	}
+}
+func (a *Worksheet) GetOutline() *Outline {
+	return &Outline{
+		Excel: a.Merge(a.Obj.GetProperty("Outline")),
+	}
+}
+func (a *Worksheet) ChartObjects() *Chart {
+	return &Chart{
+		Excel: a.Merge(a.Obj.CallMethod("ChartObjects")),
+	}
+}
+func (a *Worksheet) Calculate() {
+	v, err := a.Obj.CallMethod("Calculate")
+	a.Merge(v, err)
 }
 func (a *ChartTitle) GetText() string {
 	v, err := a.Obj.GetProperty("Text")
@@ -1811,13 +2074,22 @@ func (a *Legend) SetPosition(a0 int) {
 	v, err := a.Obj.PutProperty("Position", a0)
 	a.Merge(v, err)
 }
-func (a *AxisTitle) GetText() string {
-	v, err := a.Obj.GetProperty("Text")
+func (a *Series) GetAxisGroup() int {
+	v, err := a.Obj.GetProperty("AxisGroup")
 	a.Merge(v, err)
-	return ToString(v, err)
+	return (int)(v.Val)
 }
-func (a *AxisTitle) SetText(a0 string) {
-	v, err := a.Obj.PutProperty("Text", a0)
+func (a *Series) SetAxisGroup(a0 int) {
+	v, err := a.Obj.PutProperty("AxisGroup", a0)
+	a.Merge(v, err)
+}
+func (a *Series) GetXValues() *Range {
+	return &Range{
+		Excel: a.Merge(a.Obj.GetProperty("XValues")),
+	}
+}
+func (a *Series) SetXValues(a0 *Range) {
+	v, err := a.Obj.PutProperty("XValues", a0)
 	a.Merge(v, err)
 }
 func (a *Name) Add(a0 ...interface{}) *Name {
@@ -1834,224 +2106,6 @@ func (a *Name) Delete() {
 	v, err := a.Obj.CallMethod("Delete")
 	a.Merge(v, err)
 }
-func (a *Application) GetWorkbooks(a0 ...interface{}) *Workbook {
-	return &Workbook{
-		Excel: a.Merge(a.Obj.GetProperty("Workbooks", a0...)),
-	}
-}
-func (a *Application) GetDisplayAlerts() bool {
-	v, err := a.Obj.GetProperty("DisplayAlerts")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *Application) SetDisplayAlerts(a0 bool) {
-	v, err := a.Obj.PutProperty("DisplayAlerts", a0)
-	a.Merge(v, err)
-}
-func (a *Application) GetScreenUpdating() bool {
-	v, err := a.Obj.GetProperty("ScreenUpdating")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *Application) SetScreenUpdating(a0 bool) {
-	v, err := a.Obj.PutProperty("ScreenUpdating", a0)
-	a.Merge(v, err)
-}
-func (a *Application) Calculate() {
-	v, err := a.Obj.CallMethod("Calculate")
-	a.Merge(v, err)
-}
-func (a *Application) Quit() {
-	v, err := a.Obj.CallMethod("Quit")
-	a.Merge(v, err)
-}
-func (a *Workbook) GetHasPassword() bool {
-	v, err := a.Obj.GetProperty("HasPassword")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *Workbook) GetPrecisionAsDisplayed() bool {
-	v, err := a.Obj.GetProperty("PrecisionAsDisplayed")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *Workbook) SetPrecisionAsDisplayed(a0 bool) {
-	v, err := a.Obj.PutProperty("PrecisionAsDisplayed", a0)
-	a.Merge(v, err)
-}
-func (a *Workbook) GetWorkbooks(a0 ...interface{}) *Workbook {
-	return &Workbook{
-		Excel: a.Merge(a.Obj.GetProperty("Workbooks", a0...)),
-	}
-}
-func (a *Workbook) GetWorksheets(a0 ...interface{}) *Worksheet {
-	return &Worksheet{
-		Excel: a.Merge(a.Obj.GetProperty("Worksheets", a0...)),
-	}
-}
-func (a *Workbook) GetNames(a0 ...interface{}) *Name {
-	return &Name{
-		Excel: a.Merge(a.Obj.GetProperty("Names", a0...)),
-	}
-}
-func (a *Workbook) GetPath() string {
-	v, err := a.Obj.GetProperty("Path")
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *Workbook) GetFullName() string {
-	v, err := a.Obj.GetProperty("FullName")
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *Workbook) SetPassword(a0 string) {
-	v, err := a.Obj.PutProperty("Password", a0)
-	a.Merge(v, err)
-}
-func (a *Workbook) Protect(a0 ...interface{}) {
-	v, err := a.Obj.CallMethod("Protect", a0...)
-	a.Merge(v, err)
-}
-func (a *Workbook) ProtectSharing(a0 ...interface{}) {
-	v, err := a.Obj.CallMethod("ProtectSharing", a0...)
-	a.Merge(v, err)
-}
-func (a *Workbook) Unprotect(a0 string) {
-	v, err := a.Obj.CallMethod("Unprotect", a0)
-	a.Merge(v, err)
-}
-func (a *Workbook) UnprotectSharing(a0 string) {
-	v, err := a.Obj.CallMethod("UnprotectSharing", a0)
-	a.Merge(v, err)
-}
-func (a *Workbook) Close() {
-	v, err := a.Obj.CallMethod("Close")
-	a.Merge(v, err)
-}
-func (a *Workbook) Open(a0 string) *Workbook {
-	return &Workbook{
-		Excel: a.Merge(a.Obj.CallMethod("Open", a0)),
-	}
-}
-func (a *Workbook) SaveAs(a0 string, a1 int) *Workbook {
-	return &Workbook{
-		Excel: a.Merge(a.Obj.CallMethod("SaveAs", a0, a1)),
-	}
-}
-func (a *Workbook) Activate() {
-	v, err := a.Obj.CallMethod("Activate")
-	a.Merge(v, err)
-}
-func (a *Range) GetColumn() int {
-	v, err := a.Obj.GetProperty("Column")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *Range) GetOutline() *Outline {
-	return &Outline{
-		Excel: a.Merge(a.Obj.GetProperty("Outline")),
-	}
-}
-func (a *Range) FindNext(a0 ...interface{}) *Range {
-	return &Range{
-		Excel: a.Merge(a.Obj.CallMethod("FindNext", a0...)),
-	}
-}
-func (a *Range) FindPrevious(a0 ...interface{}) *Range {
-	return &Range{
-		Excel: a.Merge(a.Obj.CallMethod("FindPrevious", a0...)),
-	}
-}
-func (a *Range) Sort(a0 ...interface{}) {
-	v, err := a.Obj.CallMethod("Sort", a0...)
-	a.Merge(v, err)
-}
-func (a *Range) Calculate() {
-	v, err := a.Obj.CallMethod("Calculate")
-	a.Merge(v, err)
-}
-func (a *Range) AddComment(a0 ...interface{}) *Comment {
-	return &Comment{
-		Excel: a.Merge(a.Obj.CallMethod("AddComment", a0...)),
-	}
-}
-func (a *Range) AutoFill(a0 *Range, a1 int) {
-	v, err := a.Obj.CallMethod("AutoFill", a0, a1)
-	a.Merge(v, err)
-}
-func (a *Range) AutoComplete(a0 string) string {
-	v, err := a.Obj.CallMethod("AutoComplete", a0)
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *Range) Find(a0 ...interface{}) *Range {
-	return &Range{
-		Excel: a.Merge(a.Obj.CallMethod("Find", a0...)),
-	}
-}
-func (a *Series) GetXValues() *Range {
-	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("XValues")),
-	}
-}
-func (a *Series) SetXValues(a0 *Range) {
-	v, err := a.Obj.PutProperty("XValues", a0)
-	a.Merge(v, err)
-}
-func (a *Series) GetAxisGroup() int {
-	v, err := a.Obj.GetProperty("AxisGroup")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *Series) SetAxisGroup(a0 int) {
-	v, err := a.Obj.PutProperty("AxisGroup", a0)
-	a.Merge(v, err)
-}
-func (a *Axis) GetTickLabelPosition() int {
-	v, err := a.Obj.GetProperty("TickLabelPosition")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *Axis) SetTickLabelPosition(a0 int) {
-	v, err := a.Obj.PutProperty("TickLabelPosition", a0)
-	a.Merge(v, err)
-}
-func (a *Axis) GetHasTitle() bool {
-	v, err := a.Obj.GetProperty("HasTitle")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *Axis) SetHasTitle(a0 bool) {
-	v, err := a.Obj.PutProperty("HasTitle", a0)
-	a.Merge(v, err)
-}
-func (a *Axis) GetAxisTitle() *AxisTitle {
-	return &AxisTitle{
-		Excel: a.Merge(a.Obj.GetProperty("AxisTitle")),
-	}
-}
-func (a *Axis) SetAxisTitle(a0 *AxisTitle) {
-	v, err := a.Obj.PutProperty("AxisTitle", a0)
-	a.Merge(v, err)
-}
-func (a *Axis) GetHasMajorGridlines() bool {
-	v, err := a.Obj.GetProperty("HasMajorGridlines")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *Axis) SetHasMajorGridlines(a0 bool) {
-	v, err := a.Obj.PutProperty("HasMajorGridlines", a0)
-	a.Merge(v, err)
-}
-func (a *Axis) GetHasMinorGridlines() bool {
-	v, err := a.Obj.GetProperty("HasMinorGridlines")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *Axis) SetHasMinorGridlines(a0 bool) {
-	v, err := a.Obj.PutProperty("HasMinorGridlines", a0)
-	a.Merge(v, err)
-}
 func (a *Comment) GetAuthor() string {
 	v, err := a.Obj.GetProperty("Author")
 	a.Merge(v, err)
@@ -2060,6 +2114,11 @@ func (a *Comment) GetAuthor() string {
 func (a *Comment) SetAuthor(a0 string) {
 	v, err := a.Obj.PutProperty("Author", a0)
 	a.Merge(v, err)
+}
+func (a *Comment) Item(a0 int) *Comment {
+	return &Comment{
+		Excel: a.Merge(a.Obj.CallMethod("Item", a0)),
+	}
 }
 func (a *Comment) Delete() {
 	v, err := a.Obj.CallMethod("Delete")
@@ -2079,40 +2138,4 @@ func (a *Comment) Text(a0 ...interface{}) string {
 	v, err := a.Obj.CallMethod("Text", a0...)
 	a.Merge(v, err)
 	return ToString(v, err)
-}
-func (a *Comment) Item(a0 int) *Comment {
-	return &Comment{
-		Excel: a.Merge(a.Obj.CallMethod("Item", a0)),
-	}
-}
-func (a *Outline) GetAutomaticStyles() bool {
-	v, err := a.Obj.GetProperty("AutomaticStyles")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *Outline) SetAutomaticStyles(a0 bool) {
-	v, err := a.Obj.PutProperty("AutomaticStyles", a0)
-	a.Merge(v, err)
-}
-func (a *Outline) GetSummaryColumn() int {
-	v, err := a.Obj.GetProperty("SummaryColumn")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *Outline) SetSummaryColumn(a0 int) {
-	v, err := a.Obj.PutProperty("SummaryColumn", a0)
-	a.Merge(v, err)
-}
-func (a *Outline) GetSummaryRow() int {
-	v, err := a.Obj.GetProperty("SummaryRow")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *Outline) SetSummaryRow(a0 int) {
-	v, err := a.Obj.PutProperty("SummaryRow", a0)
-	a.Merge(v, err)
-}
-func (a *Outline) ShowLevels(a0 ...interface{}) {
-	v, err := a.Obj.CallMethod("ShowLevels", a0...)
-	a.Merge(v, err)
 }
