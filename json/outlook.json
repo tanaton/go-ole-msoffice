@@ -1,0 +1,392 @@
+{
+	"Package": "outlook",
+	"Object": "Outlook.Application",
+	"Const": {
+
+		"OlAccount": 105,
+		"OlAccountRuleCondition": 135,
+		"OlAccounts": 106,
+		"OlAction": 32,
+		"OlActions": 33,
+		"OlAddressEntries": 21,
+		"OlAddressEntry": 8,
+		"OlAddressList": 7,
+		"OlAddressLists": 20,
+		"OlAddressRuleCondition": 170,
+		"OlApplication": 0,
+		"OlAppointment": 26,
+		"OlAssignToCategoryRuleAction": 122,
+		"OlAttachment": 5,
+		"OlAttachments": 18,
+		"OlAttachmentSelection": 169,
+		"OlAutoFormatRule": 147,
+		"OlAutoFormatRules": 148,
+		"OlCalendarModule": 159,
+		"OlCalendarSharing": 151,
+		"OlCategories": 153,
+		"OlCategory": 152,
+		"OlCategoryRuleCondition": 130,
+		"OlClassBusinessCardView": 168,
+		"OlClassCalendarView": 139,
+		"OlClassCardView": 138,
+		"OlClassIconView": 137,
+		"OlClassNavigationPane": 155,
+		"OlClassPeopleView": 183,
+		"OlClassTableView": 136,
+		"OlClassTimeLineView": 140,
+		"OlClassTimeZone": 174,
+		"OlClassTimeZones": 175,
+		"OlColumn": 154,
+		"OlColumnFormat": 149,
+		"OlColumns": 150,
+		"OlConflict": 102,
+		"OlConflicts": 103,
+		"OlContact": 40,
+		"OlContactsModule": 160,
+		"OlConversation": 178,
+		"OlConversationHeader": 182,
+		"OlDistributionList": 69,
+		"OlDocument": 41,
+		"OlException": 30,
+		"OlExceptions": 29,
+		"OlExchangeDistributionList": 111,
+		"OlExchangeUser": 110,
+		"OlExplorer": 34,
+		"OlExplorers": 60,
+		"OlFolder": 2,
+		"OlFolders": 15,
+		"OlFolderUserProperties": 172,
+		"OlFolderUserProperty": 171,
+		"OlFormDescription": 37,
+		"OlFormNameRuleCondition": 131,
+		"OlFormRegion": 129,
+		"OlFromRssFeedRuleCondition": 173,
+		"OlFromRuleCondition": 132,
+		"OlImportanceRuleCondition": 128,
+		"OlInspector": 35,
+		"OlInspectors": 61,
+		"OlItemProperties": 98,
+		"OlItemProperty": 99,
+		"OlItems": 16,
+		"OlJournal": 42,
+		"OlJournalModule": 162,
+		"OlMail": 43,
+		"OlMailModule": 158,
+		"OlMarkAsTaskRuleAction": 124,
+		"OlMeetingCancellation": 54,
+		"OlMeetingForwardNotification": 181,
+		"OlMeetingRequest": 53,
+		"OlMeetingResponseNegative": 55,
+		"OlMeetingResponsePositive": 56,
+		"OlMeetingResponseTentative": 57,
+		"OlMoveOrCopyRuleAction": 118,
+		"OlNamespace": 1,
+		"OlNavigationFolder": 167,
+		"OlNavigationFolders": 166,
+		"OlNavigationGroup": 165,
+		"OlNavigationGroups": 164,
+		"OlNavigationModule": 157,
+		"OlNavigationModules": 156,
+		"OlNewItemAlertRuleAction": 125,
+		"OlNote": 44,
+		"OlNotesModule": 163,
+		"OlOrderField": 144,
+		"OlOrderFields": 145,
+		"OlOutlookBarGroup": 66,
+		"OlOutlookBarGroups": 65,
+		"OlOutlookBarPane": 63,
+		"OlOutlookBarShortcut": 68,
+		"OlOutlookBarShortcuts": 67,
+		"OlOutlookBarStorage": 64,
+		"OlOutspace": 180,
+		"OlPages": 36,
+		"OlPanes": 62,
+		"OlPlaySoundRuleAction": 123,
+		"OlPost": 45,
+		"OlPropertyAccessor": 112,
+		"OlPropertyPages": 71,
+		"OlPropertyPageSite": 70,
+		"OlRecipient": 4,
+		"OlRecipients": 17,
+		"OlRecurrencePattern": 28,
+		"OlReminder": 101,
+		"OlReminders": 100,
+		"OlRemote": 47,
+		"OlReport": 46,
+		"OlResults": 78,
+		"OlRow": 121,
+		"OlRule": 115,
+		"OlRuleAction": 117,
+		"OlRuleActions": 116,
+		"OlRuleCondition": 127,
+		"OlRuleConditions": 126,
+		"OlRules": 114,
+		"OlSearch": 77,
+		"OlSelection": 74,
+		"OlSelectNamesDialog": 109,
+		"OlSenderInAddressListRuleCondition": 133,
+		"OlSendRuleAction": 119,
+		"OlSharing": 104,
+		"OlSimpleItems": 179,
+		"OlSolutionsModule": 177,
+		"OlStorageItem": 113,
+		"OlStore": 107,
+		"OlStores": 108,
+		"OlSyncObject": 72,
+		"OlSyncObjects": 73,
+		"OlTable": 120,
+		"OlTask": 48,
+		"OlTaskRequest": 49,
+		"OlTaskRequestAccept": 51,
+		"OlTaskRequestDecline": 52,
+		"OlTaskRequestUpdate": 50,
+		"OlTasksModule": 161,
+		"OlTextRuleCondition": 134,
+		"OlUserDefinedProperties": 172,
+		"OlUserDefinedProperty": 171,
+		"OlUserProperties": 38,
+		"OlUserProperty": 39,
+		"OlView": 80,
+		"OlViewField": 142,
+		"OlViewFields": 141,
+		"OlViewFont": 146,
+		"OlViews": 79,
+		"OlFolderCalendar": 9,
+		"OlFolderConflicts": 19,
+		"OlFolderContacts": 10,
+		"OlFolderDeletedItems": 3,
+		"OlFolderDrafts": 16,
+		"OlFolderInbox": 6,
+		"OlFolderJournal": 11,
+		"OlFolderJunk": 23,
+		"OlFolderLocalFailures": 21,
+		"OlFolderManagedEmail": 29,
+		"OlFolderNotes": 12,
+		"OlFolderOutbox": 4,
+		"OlFolderSentMail": 5,
+		"OlFolderServerFailures": 22,
+		"OlFolderSuggestedContacts": 30,
+		"OlFolderSyncIssues": 20,
+		"OlFolderTasks": 13,
+		"OlFolderToDo": 28,
+		"OlPublicFoldersAllPublicFolders": 18,
+		"OlFolderRssFeeds": 25,
+		"OlMeeting": 1,
+		"OlMeetingCanceled": 5,
+		"OlMeetingReceived": 3,
+		"OlMeetingReceivedAndCanceled": 7,
+		"OlNonMeeting": 0
+	},
+	"RootFunction": {
+		"Name": "ThisApplication",
+		"Return": "*Application"
+	},
+	"Basic": {
+		"Property": {
+			"Session": {
+				"Get": {"Return": "*Namespace"}
+			},
+			"Class": {
+				"Get": {"Return": "int"}
+			},
+			"Application": {
+				"Get": {"Return": "*Application"}
+			}
+		}
+	},
+	"Child": {
+		"Application": {
+			"TypeConst": "OlApplication",
+			"Property": {
+				"Name": {
+					"Get": {"Return": "string"}
+				}
+			},
+			"Method": {
+				"GetNamespace": {
+					"Arguments": [{"Type": "string"}],
+					"Return": "*Namespace"
+				}
+			},
+			"Quit": {}
+		},
+		"Namespace": {
+			"TypeConst": "OlNamespace",
+			"Property": {
+				"Folders": {
+					"Get": {"Return": "*Folders"}
+				}
+			},
+			"Method": {
+				"GetDefaultFolder": {
+					"Arguments": [{"Type": "int"}],
+					"Return": "*Folder"
+				}
+			}
+		},
+		"Folders": {
+			"TypeConst": "OlFolders",
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				}
+			},
+			"Method": {
+				"GetFirst": {
+					"Return": "*Folder"
+				},
+				"GetLast": {
+					"Return": "*Folder"
+				},
+				"GetNext": {
+					"Return": "*Folder"
+				},
+				"GetPrevious": {
+					"Return": "*Folder"
+				},
+				"Item": {
+					"Arguments": [{"Type": "int"}],
+					"Return": "*Folder"
+				},
+				"Remove": {
+					"Arguments": [{"Type": "int"}],
+					"Return": "*Folder"
+				}
+			}
+		},
+		"Folder": {
+			"TypeConst": "OlFolder",
+			"Property": {
+				"Folders": {
+					"Get": {"Return": "*Folders"}
+				},
+				"Items": {
+					"Get": {"Return": "*Items"}
+				}
+			}
+		},
+		"Items": {
+			"TypeConst": "OlItems",
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				}
+			},
+			"Method": {
+				"Find": {
+					"Arguments": [{"Type": "string"}],
+					"Return": "*Item"
+				},
+				"Restrict": {
+					"Arguments": [{"Type": "string"}],
+					"Return": "*Item"
+				},
+				"FindNext": {
+					"Return": "*Item"
+				},
+				"GetFirst": {
+					"Return": "*Item"
+				},
+				"GetLast": {
+					"Return": "*Item"
+				},
+				"GetNext": {
+					"Return": "*Item"
+				},
+				"GetPrevious": {
+					"Return": "*Item"
+				},
+				"Item": {
+					"Arguments": [{"Type": "int"}],
+					"Return": "*Item"
+				},
+				"Remove": {
+					"Arguments": [{"Type": "int"}],
+					"Return": "*Item"
+				},
+				"SetColumns": {
+					"Arguments": [{"Type": "string"}]
+				},
+				"ResetColumns": {},
+				"Sort": {
+					"Arguments": [
+						{"Type": "string"},
+						{"Type": "bool"}
+					]
+				}
+			}
+		},
+		"Item": {},
+		"AppointmentItem": {
+			"TypeConst": "OlAppointment",
+			"Property": {
+				"Subject": {
+					"Get": {"Return": "string"}
+				},
+				"Body": {
+					"Get": {"Return": "string"}
+				},
+				"CreationTime": {
+					"Get": {"Return": "time.Time"}
+				},
+				"Start": {
+					"Get": {"Return": "time.Time"}
+				},
+				"End": {
+					"Get": {"Return": "time.Time"}
+				},
+				"Location": {
+					"Get": {"Return": "string"}
+				},
+				"Duration": {
+					"Get": {"Return": "int"}
+				},
+				"LastModificationTime": {
+					"Get": {"Return": "time.Time"}
+				},
+				"MeetingStatus": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"Organizer": {
+					"Get": {"Return": "string"}
+				},
+				"RecurrenceState": {
+					"Get": {"Return": "int"}
+				},
+				"ReminderSet": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"ReminderMinutesBeforeStart": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"ReplyTime": {
+					"Get": {"Return": "time.Time"}
+				},
+				"ResponseStatus": {
+					"Get": {"Return": "int"}
+				},
+				"Sensitivity": {
+					"Get": {"Return": "int"}
+				},
+				"EntryID": {
+					"Get": {"Return": "string"}
+				},
+				"RequiredAttendees": {
+					"Get": {"Return": "string"}
+				},
+				"OptionalAttendees": {
+					"Get": {"Return": "string"}
+				},
+				"MeetingWorkspaceURL": {
+					"Get": {"Return": "string"}
+				},
+				"AllDayEvent": {
+					"Get": {"Return": "bool"}
+				}
+			}
+		}
+	}
+}
