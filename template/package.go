@@ -11,7 +11,7 @@ import (
 {{if .Const -}}
 const (
 	{{range $key, $it := .Const -}}
-	{{$key}} = {{$it}}
+	{{$it.Name}} = {{$it.Data}}
 	{{end -}}
 )
 {{end -}}
@@ -145,15 +145,15 @@ func (a *{{.BasicObj}}) Release() {
 }
 
 {{range $key, $it := .Child -}}
-type {{$key}} struct {
+type {{$it.Objname}} struct {
 	{{$this.BasicObj}}
 }
 {{if ne $it.TypeConst "" -}}
-func {{$key}}Cast(a Cast) (*{{$key}}, error) {
+func {{$it.Objname}}Cast(a Cast) (*{{$it.Objname}}, error) {
 	if a.GetClass() != {{$it.TypeConst}} {
-		return nil, Error("Cast error : {{$key}}")
+		return nil, Error("Cast error : {{$it.Objname}}")
 	}
-	return &{{$key}}{
+	return &{{$it.Objname}}{
 		{{$this.BasicObj}}: a.Extends(),
 	}, nil
 }
