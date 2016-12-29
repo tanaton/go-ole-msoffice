@@ -402,9 +402,9 @@ func ThisApplication() *Application {
 		Outlook: Outlook{Obj: obj, Err: err},
 	}
 }
-func (a *Outlook) GetSession() *Namespace {
-	return &Namespace{
-		Outlook: a.Merge(a.Obj.GetProperty("Session")),
+func (a *Outlook) GetApplication() *Application {
+	return &Application{
+		Outlook: a.Merge(a.Obj.GetProperty("Application")),
 	}
 }
 func (a *Outlook) GetClass() int {
@@ -412,9 +412,9 @@ func (a *Outlook) GetClass() int {
 	a.Merge(v, err)
 	return (int)(v.Val)
 }
-func (a *Outlook) GetApplication() *Application {
-	return &Application{
-		Outlook: a.Merge(a.Obj.GetProperty("Application")),
+func (a *Outlook) GetSession() *Namespace {
+	return &Namespace{
+		Outlook: a.Merge(a.Obj.GetProperty("Session")),
 	}
 }
 func (a *Application) GetName() string {
@@ -427,25 +427,137 @@ func (a *Application) GetNamespace(a0 string) *Namespace {
 		Outlook: a.Merge(a.Obj.CallMethod("GetNamespace", a0)),
 	}
 }
-func (a *Namespace) GetFolders() *Folders {
+func (a *AppointmentItem) GetAllDayEvent() bool {
+	v, err := a.Obj.GetProperty("AllDayEvent")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *AppointmentItem) GetBody() string {
+	v, err := a.Obj.GetProperty("Body")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *AppointmentItem) GetCreationTime() time.Time {
+	v, err := a.Obj.GetProperty("CreationTime")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *AppointmentItem) GetDuration() int {
+	v, err := a.Obj.GetProperty("Duration")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *AppointmentItem) GetEnd() time.Time {
+	v, err := a.Obj.GetProperty("End")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *AppointmentItem) GetEntryID() string {
+	v, err := a.Obj.GetProperty("EntryID")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *AppointmentItem) GetLastModificationTime() time.Time {
+	v, err := a.Obj.GetProperty("LastModificationTime")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *AppointmentItem) GetLocation() string {
+	v, err := a.Obj.GetProperty("Location")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *AppointmentItem) GetMeetingStatus() int {
+	v, err := a.Obj.GetProperty("MeetingStatus")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *AppointmentItem) SetMeetingStatus(a0 int) {
+	v, err := a.Obj.PutProperty("MeetingStatus", a0)
+	a.Merge(v, err)
+}
+func (a *AppointmentItem) GetMeetingWorkspaceURL() string {
+	v, err := a.Obj.GetProperty("MeetingWorkspaceURL")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *AppointmentItem) GetOptionalAttendees() string {
+	v, err := a.Obj.GetProperty("OptionalAttendees")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *AppointmentItem) GetOrganizer() string {
+	v, err := a.Obj.GetProperty("Organizer")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *AppointmentItem) GetRecurrenceState() int {
+	v, err := a.Obj.GetProperty("RecurrenceState")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *AppointmentItem) GetReminderMinutesBeforeStart() int {
+	v, err := a.Obj.GetProperty("ReminderMinutesBeforeStart")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *AppointmentItem) SetReminderMinutesBeforeStart(a0 int) {
+	v, err := a.Obj.PutProperty("ReminderMinutesBeforeStart", a0)
+	a.Merge(v, err)
+}
+func (a *AppointmentItem) GetReminderSet() bool {
+	v, err := a.Obj.GetProperty("ReminderSet")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *AppointmentItem) SetReminderSet(a0 bool) {
+	v, err := a.Obj.PutProperty("ReminderSet", a0)
+	a.Merge(v, err)
+}
+func (a *AppointmentItem) GetReplyTime() time.Time {
+	v, err := a.Obj.GetProperty("ReplyTime")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *AppointmentItem) GetRequiredAttendees() string {
+	v, err := a.Obj.GetProperty("RequiredAttendees")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *AppointmentItem) GetResponseStatus() int {
+	v, err := a.Obj.GetProperty("ResponseStatus")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *AppointmentItem) GetSensitivity() int {
+	v, err := a.Obj.GetProperty("Sensitivity")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *AppointmentItem) GetStart() time.Time {
+	v, err := a.Obj.GetProperty("Start")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *AppointmentItem) GetSubject() string {
+	v, err := a.Obj.GetProperty("Subject")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Folder) GetFolders() *Folders {
 	return &Folders{
 		Outlook: a.Merge(a.Obj.GetProperty("Folders")),
 	}
 }
-func (a *Namespace) GetDefaultFolder(a0 int) *Folder {
-	return &Folder{
-		Outlook: a.Merge(a.Obj.CallMethod("GetDefaultFolder", a0)),
+func (a *Folder) GetItems() *Items {
+	return &Items{
+		Outlook: a.Merge(a.Obj.GetProperty("Items")),
 	}
 }
 func (a *Folders) GetCount() int {
 	v, err := a.Obj.GetProperty("Count")
 	a.Merge(v, err)
 	return (int)(v.Val)
-}
-func (a *Folders) Remove(a0 int) *Folder {
-	return &Folder{
-		Outlook: a.Merge(a.Obj.CallMethod("Remove", a0)),
-	}
 }
 func (a *Folders) GetFirst() *Folder {
 	return &Folder{
@@ -472,20 +584,20 @@ func (a *Folders) Item(a0 int) *Folder {
 		Outlook: a.Merge(a.Obj.CallMethod("Item", a0)),
 	}
 }
-func (a *Folder) GetFolders() *Folders {
-	return &Folders{
-		Outlook: a.Merge(a.Obj.GetProperty("Folders")),
-	}
-}
-func (a *Folder) GetItems() *Items {
-	return &Items{
-		Outlook: a.Merge(a.Obj.GetProperty("Items")),
+func (a *Folders) Remove(a0 int) *Folder {
+	return &Folder{
+		Outlook: a.Merge(a.Obj.CallMethod("Remove", a0)),
 	}
 }
 func (a *Items) GetCount() int {
 	v, err := a.Obj.GetProperty("Count")
 	a.Merge(v, err)
 	return (int)(v.Val)
+}
+func (a *Items) Find(a0 string) *Item {
+	return &Item{
+		Outlook: a.Merge(a.Obj.CallMethod("Find", a0)),
+	}
 }
 func (a *Items) FindNext() *Item {
 	return &Item{
@@ -512,20 +624,6 @@ func (a *Items) GetPrevious() *Item {
 		Outlook: a.Merge(a.Obj.CallMethod("GetPrevious")),
 	}
 }
-func (a *Items) Sort(a0 string, a1 bool) {
-	v, err := a.Obj.CallMethod("Sort", a0, a1)
-	a.Merge(v, err)
-}
-func (a *Items) Find(a0 string) *Item {
-	return &Item{
-		Outlook: a.Merge(a.Obj.CallMethod("Find", a0)),
-	}
-}
-func (a *Items) Restrict(a0 string) *Item {
-	return &Item{
-		Outlook: a.Merge(a.Obj.CallMethod("Restrict", a0)),
-	}
-}
 func (a *Items) Item(a0 int) *Item {
 	return &Item{
 		Outlook: a.Merge(a.Obj.CallMethod("Item", a0)),
@@ -536,128 +634,30 @@ func (a *Items) Remove(a0 int) *Item {
 		Outlook: a.Merge(a.Obj.CallMethod("Remove", a0)),
 	}
 }
-func (a *Items) SetColumns(a0 string) {
-	v, err := a.Obj.CallMethod("SetColumns", a0)
-	a.Merge(v, err)
-}
 func (a *Items) ResetColumns() {
 	v, err := a.Obj.CallMethod("ResetColumns")
 	a.Merge(v, err)
 }
-func (a *AppointmentItem) GetBody() string {
-	v, err := a.Obj.GetProperty("Body")
-	a.Merge(v, err)
-	return ToString(v, err)
+func (a *Items) Restrict(a0 string) *Item {
+	return &Item{
+		Outlook: a.Merge(a.Obj.CallMethod("Restrict", a0)),
+	}
 }
-func (a *AppointmentItem) GetCreationTime() time.Time {
-	v, err := a.Obj.GetProperty("CreationTime")
-	a.Merge(v, err)
-	return ToTime(v, err)
-}
-func (a *AppointmentItem) GetMeetingStatus() int {
-	v, err := a.Obj.GetProperty("MeetingStatus")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *AppointmentItem) SetMeetingStatus(a0 int) {
-	v, err := a.Obj.PutProperty("MeetingStatus", a0)
+func (a *Items) SetColumns(a0 string) {
+	v, err := a.Obj.CallMethod("SetColumns", a0)
 	a.Merge(v, err)
 }
-func (a *AppointmentItem) GetResponseStatus() int {
-	v, err := a.Obj.GetProperty("ResponseStatus")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *AppointmentItem) GetSensitivity() int {
-	v, err := a.Obj.GetProperty("Sensitivity")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *AppointmentItem) GetEnd() time.Time {
-	v, err := a.Obj.GetProperty("End")
-	a.Merge(v, err)
-	return ToTime(v, err)
-}
-func (a *AppointmentItem) GetLastModificationTime() time.Time {
-	v, err := a.Obj.GetProperty("LastModificationTime")
-	a.Merge(v, err)
-	return ToTime(v, err)
-}
-func (a *AppointmentItem) GetOptionalAttendees() string {
-	v, err := a.Obj.GetProperty("OptionalAttendees")
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *AppointmentItem) GetReminderMinutesBeforeStart() int {
-	v, err := a.Obj.GetProperty("ReminderMinutesBeforeStart")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *AppointmentItem) SetReminderMinutesBeforeStart(a0 int) {
-	v, err := a.Obj.PutProperty("ReminderMinutesBeforeStart", a0)
+func (a *Items) Sort(a0 string, a1 bool) {
+	v, err := a.Obj.CallMethod("Sort", a0, a1)
 	a.Merge(v, err)
 }
-func (a *AppointmentItem) GetReplyTime() time.Time {
-	v, err := a.Obj.GetProperty("ReplyTime")
-	a.Merge(v, err)
-	return ToTime(v, err)
+func (a *Namespace) GetFolders() *Folders {
+	return &Folders{
+		Outlook: a.Merge(a.Obj.GetProperty("Folders")),
+	}
 }
-func (a *AppointmentItem) GetRequiredAttendees() string {
-	v, err := a.Obj.GetProperty("RequiredAttendees")
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *AppointmentItem) GetStart() time.Time {
-	v, err := a.Obj.GetProperty("Start")
-	a.Merge(v, err)
-	return ToTime(v, err)
-}
-func (a *AppointmentItem) GetLocation() string {
-	v, err := a.Obj.GetProperty("Location")
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *AppointmentItem) GetOrganizer() string {
-	v, err := a.Obj.GetProperty("Organizer")
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *AppointmentItem) GetRecurrenceState() int {
-	v, err := a.Obj.GetProperty("RecurrenceState")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *AppointmentItem) GetReminderSet() bool {
-	v, err := a.Obj.GetProperty("ReminderSet")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *AppointmentItem) SetReminderSet(a0 bool) {
-	v, err := a.Obj.PutProperty("ReminderSet", a0)
-	a.Merge(v, err)
-}
-func (a *AppointmentItem) GetAllDayEvent() bool {
-	v, err := a.Obj.GetProperty("AllDayEvent")
-	a.Merge(v, err)
-	return ToBool(v, err)
-}
-func (a *AppointmentItem) GetSubject() string {
-	v, err := a.Obj.GetProperty("Subject")
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *AppointmentItem) GetDuration() int {
-	v, err := a.Obj.GetProperty("Duration")
-	a.Merge(v, err)
-	return (int)(v.Val)
-}
-func (a *AppointmentItem) GetEntryID() string {
-	v, err := a.Obj.GetProperty("EntryID")
-	a.Merge(v, err)
-	return ToString(v, err)
-}
-func (a *AppointmentItem) GetMeetingWorkspaceURL() string {
-	v, err := a.Obj.GetProperty("MeetingWorkspaceURL")
-	a.Merge(v, err)
-	return ToString(v, err)
+func (a *Namespace) GetDefaultFolder(a0 int) *Folder {
+	return &Folder{
+		Outlook: a.Merge(a.Obj.CallMethod("GetDefaultFolder", a0)),
+	}
 }

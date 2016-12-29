@@ -1461,47 +1461,9 @@
 	},
 	"Basic": {
 		"Property": {
-			"Count": {
-				"Get": {"Return": "int"}
-			},
-			"Columns": {
-				"Get": {
-					"Arguments": [{"Type": "interface{}", "Variable": true}],
-					"Return": "*Range"
-				}
-			},
-			"Cells": {
-				"Get": {
-					"Arguments": [
-						{"Type": "int"},
-						{"Type": "int"}
-					],
-					"Return": "*Range"
-				}
-			},
-			"End": {
-				"Get": {
-					"Arguments": [{"Type": "int"}],
-					"Return": "*Range"
-				}
-			},
-			"Value": {
-				"Get": {"Return": "*ole.VARIANT"},
-				"Set": {"Arguments": [{"Type": "interface{}", "Variable": true}]}
-			},
-			"Name": {
-				"Get": {"Return": "string"},
-				"Set": {"Arguments": [{"Type": "string"}]}
-			},
-			"Range": {
-				"Get": {
-					"Arguments": [{"Type": "*Range", "Variable": true}],
-					"Return": "*Range"
-				}
-			},
 			"Union": {
 				"Get": {
-					"Arguments": [{"Type": "*Range", "Variable": true}],
+					"Arguments": [{"Type": "interface{}", "Variable": true}],
 					"Return": "*Range"
 				}
 			},
@@ -1530,45 +1492,117 @@
 	"Child": {
 		"Application": {
 			"Property": {
-				"Workbooks": {
+				"Cells": {
 					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Workbook"
+						"Arguments": [
+							{"Type": "int"},
+							{"Type": "int"}
+						],
+						"Return": "*Range"
 					}
 				},
+				"Charts": {
+					"Get": {"Return": "*Charts"}
+				},
+				"Columns": {
+					"Get": {"Return": "*Range"}
+				},
 				"DisplayAlerts": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Name": {
+					"Get": {"Return": "string"}
+				},
+				"Names": {
+					"Get": {"Return": "*Names"}
+				},
+				"Path": {
+					"Get": {"Return": "string"}
+				},
+				"Range": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Rows": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Value": {
+					"Get": {"Return": "string"}
+				},
+				"Visible": {
 					"Get": {"Return": "bool"},
 					"Set": {"Arguments": [{"Type": "bool"}]}
 				},
 				"ScreenUpdating": {
 					"Get": {"Return": "bool"},
 					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Workbooks": {
+					"Get": {"Return": "*Workbooks"}
+				},
+				"Worksheets": {
+					"Get": {"Return": "*Worksheets"}
+				},
+				"Windows": {
+					"Get": {"Return": "*Windows"}
 				}
 			},
 			"Method": {
 				"Calculate": {},
+				"Run": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Return": "*ole.VARIANT"
+				},
+				"Union": {
+					"Arguments": [{"Type": "*Range", "Variable": true}],
+					"Return": "*Range"
+				},
 				"Quit": {}
+			}
+		},
+		"Workbooks": {
+			"Property": {
+				"Application": {
+					"Get": {"Return": "*Application"}
+				},
+				"Count": {
+					"Get": {"Return": "int"}
+				},
+				"Item": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}"}],
+						"Return": "*Workbook"
+					}
+				}
+			},
+			"Method": {
+				"Add": {
+					"Arguments": [{"Type": "interface{}"}],
+					"Return": "*Workbook"
+				},
+				"Open": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Return": "*Workbook"
+				},
+				"Close": {}
 			}
 		},
 		"Workbook": {
 			"Property": {
-				"Workbooks": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Workbook"
-					}
+				"Charts": {
+					"Get": {"Return": "*Charts"}
 				},
-				"Worksheets": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Worksheet"
-					}
+				"Name": {
+					"Get": {"Return": "string"}
 				},
 				"Names": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Name"
-					}
+					"Get": {"Return": "*Names"}
 				},
 				"Path": {
 					"Get": {"Return": "string"}
@@ -1585,6 +1619,12 @@
 				"PrecisionAsDisplayed": {
 					"Get": {"Return": "bool"},
 					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Worksheets": {
+					"Get": {"Return": "*Worksheets"}
+				},
+				"Windows": {
+					"Get": {"Return": "*Windows"}
 				}
 			},
 			"Method": {
@@ -1596,8 +1636,7 @@
 					"Arguments": [
 						{"Type": "string"},
 						{"Type": "int"}
-					],
-					"Return": "*Workbook"
+					]
 				},
 				"Activate": {},
 				"Protect": {
@@ -1615,6 +1654,32 @@
 				"Close": {}
 			}
 		},
+		"Worksheets": {
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				},
+				"Item": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}"}],
+						"Return": "*Worksheet"
+					}
+				}
+			},
+			"Method": {
+				"Add": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Return": "*Worksheet"
+				},
+				"Copy": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}]
+				},
+				"Delete": {},
+				"Move": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}]
+				}
+			}
+		},
 		"Worksheet": {
 			"Property": {
 				"Comments": {
@@ -1622,13 +1687,69 @@
 				},
 				"Outline": {
 					"Get": {"Return": "*Outline"}
+				},
+				"Cells": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Columns": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Index": {
+					"Get": {"Return": "int"}
+				},
+				"Name": {
+					"Get": {"Return": "string"},
+					"Set": {"Arguments": [{"Type": "string"}]}
+				},
+				"Names": {
+					"Get": {"Return": "*Names"}
+				},
+				"Range": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Rows": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Visible": {
+					"Get": {
+						"Arguments": [{"Type": "int"}]
+					}
 				}
 			},
 			"Method": {
+				"Add": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Return": "*Worksheet"
+				},
+				"Copy": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}]
+				},
+				"Delete": {"Return": "bool"},
 				"ChartObjects": {
 					"Return": "*Chart"
 				},
-				"Calculate": {}
+				"Calculate": {},
+				"Move": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}]
+				},
+				"SaveAs": {
+					"Arguments": [
+						{"Type": "string"},
+						{"Type": "int"}
+					]
+				}
 			}
 		},
 		"Range": {
@@ -1638,6 +1759,66 @@
 				},
 				"Outline": {
 					"Get": {"Return": "*Outline"}
+				},
+				"Cells": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Columns": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Comment": {
+					"Get": {"Return": "*Comment"}
+				},
+				"Count": {
+					"Get": {"Return": "int"}
+				},
+				"End": {
+					"Get": {
+						"Arguments": [{"Type": "int"}],
+						"Return": "*Range"
+					}
+				},
+				"Item": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Name": {
+					"Get": {"Return": "*Name"},
+					"Set": {"Arguments": [{"Type": "*Name"}]}
+				},
+				"Next": {
+					"Get": {"Return": "*Range"}
+				},
+				"Value": {
+					"Get": {"Return": "*ole.VARIANT"},
+					"Set": {"Arguments": [{"Type": "interface{}", "Variable": true}]}
+				},
+				"Range": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Row": {
+					"Get": {"Return": "int"}
+				},
+				"Rows": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Return": "*Range"
+					}
+				},
+				"Text": {
+					"Get": {"Return": "string"},
+					"Set": {"Arguments": [{"Type": "string"}]}
 				}
 			},
 			"Method": {
@@ -1673,6 +1854,32 @@
 				}
 			}
 		},
+		"Charts": {
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				},
+				"Item": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}"}],
+						"Return": "*Chart"
+					}
+				}
+			},
+			"Method": {
+				"Add2": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Return": "*Chart"
+				},
+				"Copy": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}]
+				},
+				"Delete": {},
+				"Move": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}]
+				}
+			}
+		},
 		"Chart": {
 			"Property": {
 				"Chart": {
@@ -1683,6 +1890,10 @@
 				},
 				"Legend": {
 					"Get": {"Return": "*Legend"}
+				},
+				"Name": {
+					"Get": {"Return": "string"},
+					"Set": {"Arguments": [{"Type": "string"}]}
 				},
 				"SeriesCollection": {
 					"Get": {
@@ -1796,7 +2007,12 @@
 				}
 			}
 		},
-		"Name": {
+		"Names": {
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				}
+			},
 			"Method": {
 				"Add": {
 					"Arguments": [{"Type": "interface{}", "Variable": true}],
@@ -1805,7 +2021,25 @@
 				"Item": {
 					"Arguments": [{"Type": "interface{}", "Variable": true}],
 					"Return": "*Name"
+				}
+			}
+		},
+		"Name": {
+			"Property": {
+				"Name": {
+					"Get": {"Return": "string"},
+					"Set": {"Arguments": [{"Type": "string"}]}
 				},
+				"Comment": {
+					"Get": {"Return": "string"},
+					"Set": {"Arguments": [{"Type": "string"}]}
+				},
+				"Visible": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				}
+			},
+			"Method": {
 				"Delete": {}
 			}
 		},
@@ -1852,6 +2086,38 @@
 			"Method": {
 				"ShowLevels": {
 					"Arguments": [{"Type": "interface{}", "Variable": true}]
+				}
+			}
+		},
+		"Windows": {
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				},
+				"Item": {
+					"Get": {
+						"Arguments": [{"Type": "interface{}"}],
+						"Return": "*Window"
+					}
+				}
+			}
+		},
+		"Window": {
+			"Property": {
+				"WindowState": {
+					"Get": {"Return": "string"},
+					"Set": {"Arguments": [{"Type": "string"}]}
+				},
+				"WindowState": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				}
+			},
+			"Method": {
+				"Activate": {},
+				"Close": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Return": "bool"
 				}
 			}
 		}

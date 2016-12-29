@@ -26,7 +26,7 @@ func main() {
 	workbooks.Open(rp)
 	count := workbooks.GetCount()
 	// ブックの選択
-	book := e.GetWorkbooks(count)
+	book := workbooks.GetItem(count)
 	// 名前リストの取得
 	names := book.GetNames()
 	count = names.GetCount()
