@@ -1461,12 +1461,6 @@
 	},
 	"Basic": {
 		"Property": {
-			"Union": {
-				"Get": {
-					"Arguments": [{"Type": "interface{}", "Variable": true}],
-					"Return": "*Range"
-				}
-			},
 			"Visible": {
 				"Get": {"Return": "bool"},
 				"Set": {"Arguments": [{"Type": "bool"}]}
@@ -1480,7 +1474,10 @@
 		},
 		"Method": {
 			"CheckSpelling": {
-				"Arguments": [{"Type": "interface{}", "Variable": true}],
+				"Arguments": [
+					{"Type": "string"},
+					{"Type": "interface{}", "Variable": true, "Maximum": 2, "TypeCheck": ["*ole.VARIANT", "bool"]}
+				],
 				"Return": "bool"
 			},
 			"Evaluate": {
@@ -1493,13 +1490,7 @@
 		"Application": {
 			"Property": {
 				"Cells": {
-					"Get": {
-						"Arguments": [
-							{"Type": "int"},
-							{"Type": "int"}
-						],
-						"Return": "*Range"
-					}
+					"Get": {"Return": "*Range"}
 				},
 				"Charts": {
 					"Get": {"Return": "*Charts"}
@@ -1522,15 +1513,15 @@
 				},
 				"Range": {
 					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Arguments": [
+							{"Type": "interface{}", "TypeCheck": ["int", "string", "*Range"]},
+							{"Type": "interface{}", "Variable": true, "Maximum": 1, "TypeCheck": ["int", "string", "*Range"]}
+						],
 						"Return": "*Range"
 					}
 				},
 				"Rows": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Range"
-					}
+					"Get": {"Return": "*Range"}
 				},
 				"Value": {
 					"Get": {"Return": "string"}
@@ -1560,7 +1551,11 @@
 					"Return": "*ole.VARIANT"
 				},
 				"Union": {
-					"Arguments": [{"Type": "*Range", "Variable": true}],
+					"Arguments": [
+						{"Type": "*Range"},
+						{"Type": "*Range"},
+						{"Type": "*Range", "Variable": true}
+					],
 					"Return": "*Range"
 				},
 				"Quit": {}
@@ -1576,7 +1571,7 @@
 				},
 				"Item": {
 					"Get": {
-						"Arguments": [{"Type": "interface{}"}],
+						"Arguments": [{"Type": "interface{}", "TypeCheck": ["int", "string", "*ole.VARIANT"]}],
 						"Return": "*Workbook"
 					}
 				}
@@ -1628,10 +1623,6 @@
 				}
 			},
 			"Method": {
-				"Open": {
-					"Arguments": [{"Type": "string"}],
-					"Return": "*Workbook"
-				},
 				"SaveAs": {
 					"Arguments": [
 						{"Type": "string"},
@@ -1661,7 +1652,7 @@
 				},
 				"Item": {
 					"Get": {
-						"Arguments": [{"Type": "interface{}"}],
+						"Arguments": [{"Type": "interface{}", "TypeCheck": ["int", "string", "*ole.VARIANT"]}],
 						"Return": "*Worksheet"
 					}
 				}
@@ -1689,16 +1680,10 @@
 					"Get": {"Return": "*Outline"}
 				},
 				"Cells": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Range"
-					}
+					"Get": {"Return": "*Range"}
 				},
 				"Columns": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Range"
-					}
+					"Get": {"Return": "*Range"}
 				},
 				"Index": {
 					"Get": {"Return": "int"}
@@ -1712,15 +1697,15 @@
 				},
 				"Range": {
 					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Arguments": [
+							{"Type": "interface{}", "TypeCheck": ["int", "string", "*Range"]},
+							{"Type": "interface{}", "Variable": true, "Maximum": 1, "TypeCheck": ["int", "string", "*Range"]}
+						],
 						"Return": "*Range"
 					}
 				},
 				"Rows": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Range"
-					}
+					"Get": {"Return": "*Range"}
 				},
 				"Visible": {
 					"Get": {
@@ -1729,10 +1714,6 @@
 				}
 			},
 			"Method": {
-				"Add": {
-					"Arguments": [{"Type": "interface{}", "Variable": true}],
-					"Return": "*Worksheet"
-				},
 				"Copy": {
 					"Arguments": [{"Type": "interface{}", "Variable": true}]
 				},
@@ -1761,16 +1742,10 @@
 					"Get": {"Return": "*Outline"}
 				},
 				"Cells": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Range"
-					}
+					"Get": {"Return": "*Range"}
 				},
 				"Columns": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Range"
-					}
+					"Get": {"Return": "*Range"}
 				},
 				"Comment": {
 					"Get": {"Return": "*Comment"}
@@ -1786,7 +1761,10 @@
 				},
 				"Item": {
 					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Arguments": [
+							{"Type": "int"},
+							{"Type": "interface{}", "Variable": true, "Maximum": 1, "TypeCheck": ["int", "string", "*ole.VARIANT"]}
+						],
 						"Return": "*Range"
 					}
 				},
@@ -1803,7 +1781,10 @@
 				},
 				"Range": {
 					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
+						"Arguments": [
+							{"Type": "interface{}", "TypeCheck": ["int", "string", "*Range"]},
+							{"Type": "interface{}", "Variable": true, "Maximum": 1, "TypeCheck": ["int", "string", "*Range"]}
+						],
 						"Return": "*Range"
 					}
 				},
@@ -1811,10 +1792,7 @@
 					"Get": {"Return": "int"}
 				},
 				"Rows": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Range"
-					}
+					"Get": {"Return": "*Range"}
 				},
 				"Text": {
 					"Get": {"Return": "string"},
@@ -1833,15 +1811,18 @@
 					"Return": "string"
 				},
 				"Find": {
-					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Arguments": [
+						{"Type": "interface{}", "TypeCheck": ["string", "int", "*ole.VARIANT"]},
+						{"Type": "interface{}", "Variable": true}
+					],
 					"Return": "*Range"
 				},
 				"FindNext": {
-					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Arguments": [{"Type": "interface{}", "Variable": true, "Maximum": 1}],
 					"Return": "*Range"
 				},
 				"FindPrevious": {
-					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Arguments": [{"Type": "interface{}", "Variable": true, "Maximum": 1}],
 					"Return": "*Range"
 				},
 				"Sort": {
@@ -1849,7 +1830,7 @@
 				},
 				"Calculate": {},
 				"AddComment": {
-					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Arguments": [{"Type": "interface{}", "Variable": true, "Maximum": 1}],
 					"Return": "*Comment"
 				}
 			}
@@ -1861,7 +1842,7 @@
 				},
 				"Item": {
 					"Get": {
-						"Arguments": [{"Type": "interface{}"}],
+						"Arguments": [{"Type": "interface{}", "TypeCheck": ["int", "string", "*ole.VARIANT"]}],
 						"Return": "*Chart"
 					}
 				}
@@ -1895,12 +1876,6 @@
 					"Get": {"Return": "string"},
 					"Set": {"Arguments": [{"Type": "string"}]}
 				},
-				"SeriesCollection": {
-					"Get": {
-						"Arguments": [{"Type": "interface{}", "Variable": true}],
-						"Return": "*Series"
-					}
-				},
 				"HasTitle": {
 					"Get": {"Return": "bool"},
 					"Set": {"Arguments": [{"Type": "bool"}]}
@@ -1933,6 +1908,9 @@
 					],
 					"Return": "*Axis"
 				},
+				"SeriesCollection": {
+					"Return": "*SeriesCollection"
+				},
 				"Location": {
 					"Arguments": [{"Type": "interface{}", "Variable": true}],
 					"Return": "*Chart"
@@ -1960,6 +1938,33 @@
 				"Position": {
 					"Get": {"Return": "int"},
 					"Set": {"Arguments": [{"Type": "int"}]}
+				}
+			}
+		},
+		"SeriesCollection": {
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				}
+			},
+			"Method": {
+				"Add": {
+					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Return": "*Worksheet"
+				},
+				"NewSeries": {
+					"Return": "*Series"
+				},
+				"Extend": {
+					"Arguments": [
+						{"Type": "*Range"},
+						{"Type": "interface{}", "Variable": true, "Maximum": 2}
+					],
+					"Return": "*Series"
+				},
+				"Item": {
+					"Arguments": [{"Type": "interface{}", "TypeCheck": ["int", "string", "*ole.VARIANT"]}],
+					"Return": "*Series"
 				}
 			}
 		},
@@ -2019,7 +2024,7 @@
 					"Return": "*Name"
 				},
 				"Item": {
-					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Arguments": [{"Type": "interface{}", "Variable": true, "Maximum": 3}],
 					"Return": "*Name"
 				}
 			}
@@ -2063,7 +2068,7 @@
 					"Return": "*Comment"
 				},
 				"Text": {
-					"Arguments": [{"Type": "interface{}", "Variable": true}],
+					"Arguments": [{"Type": "interface{}", "Variable": true, "Maximum": 3, "TypeCheck": ["string", "int", "bool"]}],
 					"Return": "string"
 				}
 			}
@@ -2096,7 +2101,7 @@
 				},
 				"Item": {
 					"Get": {
-						"Arguments": [{"Type": "interface{}"}],
+						"Arguments": [{"Type": "interface{}", "TypeCheck": ["int", "string", "*ole.VARIANT"]}],
 						"Return": "*Window"
 					}
 				}

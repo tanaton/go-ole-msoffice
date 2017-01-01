@@ -1630,6 +1630,9 @@ type Range struct {
 type Series struct {
 	Excel
 }
+type SeriesCollection struct {
+	Excel
+}
 type Window struct {
 	Excel
 }
@@ -1669,11 +1672,6 @@ func (a *Excel) GetCreator() int {
 	a.Merge(v, err)
 	return (int)(v.Val)
 }
-func (a *Excel) GetUnion(a0 ...interface{}) *Range {
-	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Union", a0...)),
-	}
-}
 func (a *Excel) GetVisible() bool {
 	v, err := a.Obj.GetProperty("Visible")
 	a.Merge(v, err)
@@ -1683,8 +1681,23 @@ func (a *Excel) SetVisible(a0 bool) {
 	v, err := a.Obj.PutProperty("Visible", a0)
 	a.Merge(v, err)
 }
-func (a *Excel) CheckSpelling(a0 ...interface{}) bool {
-	v, err := a.Obj.CallMethod("CheckSpelling", a0...)
+func (a *Excel) CheckSpelling(a0 string, a1 ...interface{}) bool {
+	av := make([]interface{}, 0, 4)
+	av = append(av, a0)
+	if len(a1) > 2 {
+		panic("Excel.CheckSpelling : a1 : number of arguments is greater than 2")
+	}
+	for _, it := range a1 {
+		switch it.(type) {
+		case *ole.VARIANT:
+			av = append(av, it)
+		case bool:
+			av = append(av, it)
+		default:
+			panic("Excel.CheckSpelling : a1 : type given for the argument is different")
+		}
+	}
+	v, err := a.Obj.CallMethod("CheckSpelling", av...)
 	a.Merge(v, err)
 	return ToBool(v, err)
 }
@@ -1693,9 +1706,9 @@ func (a *Excel) Evaluate(a0 string) *Range {
 		Excel: a.Merge(a.Obj.CallMethod("Evaluate", a0)),
 	}
 }
-func (a *Application) GetCells(a0 int, a1 int) *Range {
+func (a *Application) GetCells() *Range {
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Cells", a0, a1)),
+		Excel: a.Merge(a.Obj.GetProperty("Cells")),
 	}
 }
 func (a *Application) GetCharts() *Charts {
@@ -1732,14 +1745,40 @@ func (a *Application) GetPath() string {
 	a.Merge(v, err)
 	return ToString(v, err)
 }
-func (a *Application) GetRange(a0 ...interface{}) *Range {
+func (a *Application) GetRange(a0 interface{}, a1 ...interface{}) *Range {
+	av := make([]interface{}, 0, 4)
+	switch a0.(type) {
+	case int:
+		av = append(av, a0)
+	case string:
+		av = append(av, a0)
+	case *Range:
+		av = append(av, (a0.(*Range)).Obj)
+	default:
+		panic("Application.GetRange : a0 : type given for the argument is different")
+	}
+	if len(a1) > 1 {
+		panic("Application.GetRange : a1 : number of arguments is greater than 1")
+	}
+	for _, it := range a1 {
+		switch it.(type) {
+		case int:
+			av = append(av, it)
+		case string:
+			av = append(av, it)
+		case *Range:
+			av = append(av, (it.(*Range)).Obj)
+		default:
+			panic("Application.GetRange : a1 : type given for the argument is different")
+		}
+	}
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Range", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Range", av...)),
 	}
 }
-func (a *Application) GetRows(a0 ...interface{}) *Range {
+func (a *Application) GetRows() *Range {
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Rows", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Rows")),
 	}
 }
 func (a *Application) GetScreenUpdating() bool {
@@ -1793,10 +1832,12 @@ func (a *Application) Run(a0 ...interface{}) *ole.VARIANT {
 	a.Merge(v, err)
 	return v
 }
-func (a *Application) Union(a0 ...*Range) *Range {
-	av := make([]interface{}, len(a0))
-	for i, it := range a0 {
-		av[i] = it.Obj
+func (a *Application) Union(a0 *Range, a1 *Range, a2 ...*Range) *Range {
+	av := make([]interface{}, 0, 4)
+	av = append(av, a0.Obj)
+	av = append(av, a1.Obj)
+	for _, it := range a2 {
+		av = append(av, it.Obj)
 	}
 	return &Range{
 		Excel: a.Merge(a.Obj.CallMethod("Union", av...)),
@@ -1893,11 +1934,6 @@ func (a *Chart) SetName(a0 string) {
 	v, err := a.Obj.PutProperty("Name", a0)
 	a.Merge(v, err)
 }
-func (a *Chart) GetSeriesCollection(a0 ...interface{}) *Series {
-	return &Series{
-		Excel: a.Merge(a.Obj.GetProperty("SeriesCollection", a0...)),
-	}
-}
 func (a *Chart) Add(a0 int, a1 int, a2 int, a3 int) *Chart {
 	return &Chart{
 		Excel: a.Merge(a.Obj.CallMethod("Add", a0, a1, a2, a3)),
@@ -1911,6 +1947,11 @@ func (a *Chart) Axes(a0 int, a1 int) *Axis {
 func (a *Chart) Location(a0 ...interface{}) *Chart {
 	return &Chart{
 		Excel: a.Merge(a.Obj.CallMethod("Location", a0...)),
+	}
+}
+func (a *Chart) SeriesCollection() *SeriesCollection {
+	return &SeriesCollection{
+		Excel: a.Merge(a.Obj.CallMethod("SeriesCollection")),
 	}
 }
 func (a *Chart) SetSourceData(a0 *Range, a1 int) *Chart {
@@ -1951,6 +1992,13 @@ func (a *Charts) GetCount() int {
 	return (int)(v.Val)
 }
 func (a *Charts) GetItem(a0 interface{}) *Chart {
+	switch a0.(type) {
+	case int:
+	case string:
+	case *ole.VARIANT:
+	default:
+		panic("Charts.GetItem : a0 : type given for the argument is different")
+	}
 	return &Chart{
 		Excel: a.Merge(a.Obj.GetProperty("Item", a0)),
 	}
@@ -2001,6 +2049,18 @@ func (a *Comment) Previous() *Comment {
 	}
 }
 func (a *Comment) Text(a0 ...interface{}) string {
+	if len(a0) > 3 {
+		panic("Comment.Text : a0 : number of arguments is greater than 3")
+	}
+	for _, it := range a0 {
+		switch it.(type) {
+		case string:
+		case int:
+		case bool:
+		default:
+			panic("Comment.Text : a0 : type given for the argument is different")
+		}
+	}
 	v, err := a.Obj.CallMethod("Text", a0...)
 	a.Merge(v, err)
 	return ToString(v, err)
@@ -2056,6 +2116,9 @@ func (a *Names) Add(a0 ...interface{}) *Name {
 	}
 }
 func (a *Names) Item(a0 ...interface{}) *Name {
+	if len(a0) > 3 {
+		panic("Names.Item : a0 : number of arguments is greater than 3")
+	}
 	return &Name{
 		Excel: a.Merge(a.Obj.CallMethod("Item", a0...)),
 	}
@@ -2091,9 +2154,9 @@ func (a *Outline) ShowLevels(a0 ...interface{}) {
 	v, err := a.Obj.CallMethod("ShowLevels", a0...)
 	a.Merge(v, err)
 }
-func (a *Range) GetCells(a0 ...interface{}) *Range {
+func (a *Range) GetCells() *Range {
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Cells", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Cells")),
 	}
 }
 func (a *Range) GetColumn() int {
@@ -2101,9 +2164,9 @@ func (a *Range) GetColumn() int {
 	a.Merge(v, err)
 	return (int)(v.Val)
 }
-func (a *Range) GetColumns(a0 ...interface{}) *Range {
+func (a *Range) GetColumns() *Range {
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Columns", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Columns")),
 	}
 }
 func (a *Range) GetComment() *Comment {
@@ -2121,9 +2184,26 @@ func (a *Range) GetEnd(a0 int) *Range {
 		Excel: a.Merge(a.Obj.GetProperty("End", a0)),
 	}
 }
-func (a *Range) GetItem(a0 ...interface{}) *Range {
+func (a *Range) GetItem(a0 int, a1 ...interface{}) *Range {
+	av := make([]interface{}, 0, 4)
+	av = append(av, a0)
+	if len(a1) > 1 {
+		panic("Range.GetItem : a1 : number of arguments is greater than 1")
+	}
+	for _, it := range a1 {
+		switch it.(type) {
+		case int:
+			av = append(av, it)
+		case string:
+			av = append(av, it)
+		case *ole.VARIANT:
+			av = append(av, it)
+		default:
+			panic("Range.GetItem : a1 : type given for the argument is different")
+		}
+	}
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Item", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Item", av...)),
 	}
 }
 func (a *Range) GetName() *Name {
@@ -2145,9 +2225,35 @@ func (a *Range) GetOutline() *Outline {
 		Excel: a.Merge(a.Obj.GetProperty("Outline")),
 	}
 }
-func (a *Range) GetRange(a0 ...interface{}) *Range {
+func (a *Range) GetRange(a0 interface{}, a1 ...interface{}) *Range {
+	av := make([]interface{}, 0, 4)
+	switch a0.(type) {
+	case int:
+		av = append(av, a0)
+	case string:
+		av = append(av, a0)
+	case *Range:
+		av = append(av, (a0.(*Range)).Obj)
+	default:
+		panic("Range.GetRange : a0 : type given for the argument is different")
+	}
+	if len(a1) > 1 {
+		panic("Range.GetRange : a1 : number of arguments is greater than 1")
+	}
+	for _, it := range a1 {
+		switch it.(type) {
+		case int:
+			av = append(av, it)
+		case string:
+			av = append(av, it)
+		case *Range:
+			av = append(av, (it.(*Range)).Obj)
+		default:
+			panic("Range.GetRange : a1 : type given for the argument is different")
+		}
+	}
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Range", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Range", av...)),
 	}
 }
 func (a *Range) GetRow() int {
@@ -2155,9 +2261,9 @@ func (a *Range) GetRow() int {
 	a.Merge(v, err)
 	return (int)(v.Val)
 }
-func (a *Range) GetRows(a0 ...interface{}) *Range {
+func (a *Range) GetRows() *Range {
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Rows", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Rows")),
 	}
 }
 func (a *Range) GetText() string {
@@ -2179,6 +2285,9 @@ func (a *Range) SetValue(a0 ...interface{}) {
 	a.Merge(v, err)
 }
 func (a *Range) AddComment(a0 ...interface{}) *Comment {
+	if len(a0) > 1 {
+		panic("Range.AddComment : a0 : number of arguments is greater than 1")
+	}
 	return &Comment{
 		Excel: a.Merge(a.Obj.CallMethod("AddComment", a0...)),
 	}
@@ -2196,17 +2305,37 @@ func (a *Range) Calculate() {
 	v, err := a.Obj.CallMethod("Calculate")
 	a.Merge(v, err)
 }
-func (a *Range) Find(a0 ...interface{}) *Range {
+func (a *Range) Find(a0 interface{}, a1 ...interface{}) *Range {
+	av := make([]interface{}, 0, 4)
+	switch a0.(type) {
+	case string:
+		av = append(av, a0)
+	case int:
+		av = append(av, a0)
+	case *ole.VARIANT:
+		av = append(av, a0)
+	default:
+		panic("Range.Find : a0 : type given for the argument is different")
+	}
+	for _, it := range a1 {
+		av = append(av, it)
+	}
 	return &Range{
-		Excel: a.Merge(a.Obj.CallMethod("Find", a0...)),
+		Excel: a.Merge(a.Obj.CallMethod("Find", av...)),
 	}
 }
 func (a *Range) FindNext(a0 ...interface{}) *Range {
+	if len(a0) > 1 {
+		panic("Range.FindNext : a0 : number of arguments is greater than 1")
+	}
 	return &Range{
 		Excel: a.Merge(a.Obj.CallMethod("FindNext", a0...)),
 	}
 }
 func (a *Range) FindPrevious(a0 ...interface{}) *Range {
+	if len(a0) > 1 {
+		panic("Range.FindPrevious : a0 : number of arguments is greater than 1")
+	}
 	return &Range{
 		Excel: a.Merge(a.Obj.CallMethod("FindPrevious", a0...)),
 	}
@@ -2233,6 +2362,46 @@ func (a *Series) SetXValues(a0 *Range) {
 	v, err := a.Obj.PutProperty("XValues", a0)
 	a.Merge(v, err)
 }
+func (a *SeriesCollection) GetCount() int {
+	v, err := a.Obj.GetProperty("Count")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *SeriesCollection) Add(a0 ...interface{}) *Worksheet {
+	return &Worksheet{
+		Excel: a.Merge(a.Obj.CallMethod("Add", a0...)),
+	}
+}
+func (a *SeriesCollection) Extend(a0 *Range, a1 ...interface{}) *Series {
+	av := make([]interface{}, 0, 4)
+	av = append(av, a0.Obj)
+	if len(a1) > 2 {
+		panic("SeriesCollection.Extend : a1 : number of arguments is greater than 2")
+	}
+	for _, it := range a1 {
+		av = append(av, it)
+	}
+	return &Series{
+		Excel: a.Merge(a.Obj.CallMethod("Extend", av...)),
+	}
+}
+func (a *SeriesCollection) Item(a0 interface{}) *Series {
+	switch a0.(type) {
+	case int:
+	case string:
+	case *ole.VARIANT:
+	default:
+		panic("SeriesCollection.Item : a0 : type given for the argument is different")
+	}
+	return &Series{
+		Excel: a.Merge(a.Obj.CallMethod("Item", a0)),
+	}
+}
+func (a *SeriesCollection) NewSeries() *Series {
+	return &Series{
+		Excel: a.Merge(a.Obj.CallMethod("NewSeries")),
+	}
+}
 func (a *Window) GetWindowState() int {
 	v, err := a.Obj.GetProperty("WindowState")
 	a.Merge(v, err)
@@ -2257,6 +2426,13 @@ func (a *Windows) GetCount() int {
 	return (int)(v.Val)
 }
 func (a *Windows) GetItem(a0 interface{}) *Window {
+	switch a0.(type) {
+	case int:
+	case string:
+	case *ole.VARIANT:
+	default:
+		panic("Windows.GetItem : a0 : type given for the argument is different")
+	}
 	return &Window{
 		Excel: a.Merge(a.Obj.GetProperty("Item", a0)),
 	}
@@ -2322,11 +2498,6 @@ func (a *Workbook) Close() {
 	v, err := a.Obj.CallMethod("Close")
 	a.Merge(v, err)
 }
-func (a *Workbook) Open(a0 string) *Workbook {
-	return &Workbook{
-		Excel: a.Merge(a.Obj.CallMethod("Open", a0)),
-	}
-}
 func (a *Workbook) Protect(a0 ...interface{}) {
 	v, err := a.Obj.CallMethod("Protect", a0...)
 	a.Merge(v, err)
@@ -2358,6 +2529,13 @@ func (a *Workbooks) GetCount() int {
 	return (int)(v.Val)
 }
 func (a *Workbooks) GetItem(a0 interface{}) *Workbook {
+	switch a0.(type) {
+	case int:
+	case string:
+	case *ole.VARIANT:
+	default:
+		panic("Workbooks.GetItem : a0 : type given for the argument is different")
+	}
 	return &Workbook{
 		Excel: a.Merge(a.Obj.GetProperty("Item", a0)),
 	}
@@ -2376,14 +2554,14 @@ func (a *Workbooks) Open(a0 ...interface{}) *Workbook {
 		Excel: a.Merge(a.Obj.CallMethod("Open", a0...)),
 	}
 }
-func (a *Worksheet) GetCells(a0 ...interface{}) *Range {
+func (a *Worksheet) GetCells() *Range {
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Cells", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Cells")),
 	}
 }
-func (a *Worksheet) GetColumns(a0 ...interface{}) *Range {
+func (a *Worksheet) GetColumns() *Range {
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Columns", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Columns")),
 	}
 }
 func (a *Worksheet) GetComments() *Comment {
@@ -2415,24 +2593,45 @@ func (a *Worksheet) GetOutline() *Outline {
 		Excel: a.Merge(a.Obj.GetProperty("Outline")),
 	}
 }
-func (a *Worksheet) GetRange(a0 ...interface{}) *Range {
+func (a *Worksheet) GetRange(a0 interface{}, a1 ...interface{}) *Range {
+	av := make([]interface{}, 0, 4)
+	switch a0.(type) {
+	case int:
+		av = append(av, a0)
+	case string:
+		av = append(av, a0)
+	case *Range:
+		av = append(av, (a0.(*Range)).Obj)
+	default:
+		panic("Worksheet.GetRange : a0 : type given for the argument is different")
+	}
+	if len(a1) > 1 {
+		panic("Worksheet.GetRange : a1 : number of arguments is greater than 1")
+	}
+	for _, it := range a1 {
+		switch it.(type) {
+		case int:
+			av = append(av, it)
+		case string:
+			av = append(av, it)
+		case *Range:
+			av = append(av, (it.(*Range)).Obj)
+		default:
+			panic("Worksheet.GetRange : a1 : type given for the argument is different")
+		}
+	}
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Range", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Range", av...)),
 	}
 }
-func (a *Worksheet) GetRows(a0 ...interface{}) *Range {
+func (a *Worksheet) GetRows() *Range {
 	return &Range{
-		Excel: a.Merge(a.Obj.GetProperty("Rows", a0...)),
+		Excel: a.Merge(a.Obj.GetProperty("Rows")),
 	}
 }
 func (a *Worksheet) GetVisible(a0 int) {
 	v, err := a.Obj.GetProperty("Visible", a0)
 	a.Merge(v, err)
-}
-func (a *Worksheet) Add(a0 ...interface{}) *Worksheet {
-	return &Worksheet{
-		Excel: a.Merge(a.Obj.CallMethod("Add", a0...)),
-	}
 }
 func (a *Worksheet) Calculate() {
 	v, err := a.Obj.CallMethod("Calculate")
@@ -2466,6 +2665,13 @@ func (a *Worksheets) GetCount() int {
 	return (int)(v.Val)
 }
 func (a *Worksheets) GetItem(a0 interface{}) *Worksheet {
+	switch a0.(type) {
+	case int:
+	case string:
+	case *ole.VARIANT:
+	default:
+		panic("Worksheets.GetItem : a0 : type given for the argument is different")
+	}
 	return &Worksheet{
 		Excel: a.Merge(a.Obj.GetProperty("Item", a0)),
 	}

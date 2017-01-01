@@ -37,9 +37,12 @@ func (c Consts) Swap(i, j int) {
 }
 
 type Argument struct {
-	Type     string
-	Variable bool   `json:",omitempty"`
-	UserObj  string `json:",omitempty"`
+	Type      string
+	Variable  bool     `json:",omitempty"`
+	Minimum   int      `json:",omitempty"`
+	Maximum   int      `json:",omitempty"`
+	TypeCheck []string `json:",omitempty"`
+	UserObj   string   `json:"-"`
 }
 
 type Function struct {
@@ -134,22 +137,29 @@ type PackageData struct {
 }
 
 type FunctionData struct {
-	BasicObj string
-	Obj      string
-	FuncName string
-	Arg      []*Argument
-	OleFunc  string
-	OleName  string
-	RetType  string
-	RetObj   string
+	BasicObj    string
+	Obj         string
+	FuncName    string
+	Arg         []*Argument
+	ArgVariable bool
+	OleFunc     string
+	OleName     string
+	RetType     string
+	RetObj      string
 }
 
-var FunctionTempl = template.Must(template.ParseFiles("template/function.go"))
-var PackageTempl = template.Must(template.ParseFiles("template/package.go"))
-var FunctionPrefixMap = map[string]string{
-	"GetProperty": "Get",
-	"PutProperty": "Set",
-	"CallMethod":  "",
+var FunctionTempl *template.Template
+var PackageTempl *template.Template
+var FunctionPrefixMap map[string]string
+
+func init() {
+	FunctionTempl = template.Must(template.New("function_generator").Funcs(template.FuncMap{"UserObjectDereference": UserObjectDereference}).ParseFiles("template/function.go"))
+	PackageTempl = template.Must(template.ParseFiles("template/package.go"))
+	FunctionPrefixMap = map[string]string{
+		"GetProperty": "Get",
+		"PutProperty": "Set",
+		"CallMethod":  "",
+	}
 }
 
 func main() {
@@ -313,20 +323,28 @@ func (pd *PackageData) WriteModule(ocs *ObjectClassStable) error {
 
 func (pd *PackageData) WriteFunction(f *Function, o, of string) error {
 	pre := FunctionPrefixMap[of]
-	for _, arg := range f.Arguments {
-		arg.UserObj = UserObjectDereference(arg.Type)
-	}
 	fd := FunctionData{
 		BasicObj: pd.BasicObj,
 		Obj:      o,
 		FuncName: pre + f.Name,
-		Arg:      f.Arguments,
-		OleFunc:  of,
-		OleName:  f.Name,
-		RetType:  f.Return,
-		RetObj:   UserObjectDereference(f.Return),
+		//Arg:         f.Arguments,
+		//ArgVariable: false,
+		OleFunc: of,
+		OleName: f.Name,
+		RetType: f.Return,
+		RetObj:  UserObjectDereference(f.Return),
 	}
-	return FunctionTempl.Execute(pd.buf, &fd)
+	for _, it := range f.Arguments {
+		it.UserObj = UserObjectDereference(it.Type)
+		if it.Variable {
+			fd.ArgVariable = true
+		}
+	}
+	if len(f.Arguments) == 1 && f.Arguments[0].Type == "interface{}" {
+		fd.ArgVariable = false
+	}
+	fd.Arg = f.Arguments
+	return FunctionTempl.ExecuteTemplate(pd.buf, "function.go", &fd)
 }
 
 func UserObjectDereference(t string) (ret string) {
