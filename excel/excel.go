@@ -1849,7 +1849,7 @@ func (a *Axis) GetAxisTitle() *AxisTitle {
 	}
 }
 func (a *Axis) SetAxisTitle(a0 *AxisTitle) {
-	v, err := a.Obj.PutProperty("AxisTitle", a0)
+	v, err := a.Obj.PutProperty("AxisTitle", a0.Obj)
 	a.Merge(v, err)
 }
 func (a *Axis) GetHasMajorGridlines() bool {
@@ -1956,7 +1956,7 @@ func (a *Chart) SeriesCollection() *SeriesCollection {
 }
 func (a *Chart) SetSourceData(a0 *Range, a1 int) *Chart {
 	return &Chart{
-		Excel: a.Merge(a.Obj.CallMethod("SetSourceData", a0, a1)),
+		Excel: a.Merge(a.Obj.CallMethod("SetSourceData", a0.Obj, a1)),
 	}
 }
 func (a *ChartTitle) GetIncludeInLayout() bool {
@@ -2212,7 +2212,7 @@ func (a *Range) GetName() *Name {
 	}
 }
 func (a *Range) SetName(a0 *Name) {
-	v, err := a.Obj.PutProperty("Name", a0)
+	v, err := a.Obj.PutProperty("Name", a0.Obj)
 	a.Merge(v, err)
 }
 func (a *Range) GetNext() *Range {
@@ -2298,7 +2298,7 @@ func (a *Range) AutoComplete(a0 string) string {
 	return ToString(v, err)
 }
 func (a *Range) AutoFill(a0 *Range, a1 int) {
-	v, err := a.Obj.CallMethod("AutoFill", a0, a1)
+	v, err := a.Obj.CallMethod("AutoFill", a0.Obj, a1)
 	a.Merge(v, err)
 }
 func (a *Range) Calculate() {
@@ -2359,7 +2359,7 @@ func (a *Series) GetXValues() *Range {
 	}
 }
 func (a *Series) SetXValues(a0 *Range) {
-	v, err := a.Obj.PutProperty("XValues", a0)
+	v, err := a.Obj.PutProperty("XValues", a0.Obj)
 	a.Merge(v, err)
 }
 func (a *SeriesCollection) GetCount() int {

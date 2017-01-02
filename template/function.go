@@ -83,7 +83,7 @@ func (a *{{.Obj}}) {{.FuncName}}(
 				, av...
 			{{- else -}}
 				{{- range $i, $it := .Arg -}}
-					, a{{$i}}{{if $it.Variable}}...{{end -}}
+					, a{{$i}}{{if ne $it.UserObj ""}}.Obj{{end}}{{if $it.Variable}}...{{end -}}
 				{{- end -}}
 			{{- end -}}
 			)),
@@ -94,7 +94,7 @@ func (a *{{.Obj}}) {{.FuncName}}(
 			, av...
 		{{- else -}}
 			{{- range $i, $it := .Arg -}}
-				, a{{$i}}{{if $it.Variable}}...{{end -}}
+				, a{{$i}}{{if ne $it.UserObj ""}}.Obj{{end}}{{if $it.Variable}}...{{end -}}
 			{{- end -}}
 		{{- end -}}
 		)
