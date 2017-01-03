@@ -19,6 +19,57 @@ type GraphItem struct {
 	leg   []string
 }
 
+func main() {
+	// COMの初期化
+	ole.CoInitializeEx(0, ole.COINIT_APARTMENTTHREADED|ole.COINIT_DISABLE_OLE1DDE)
+	// 確実に行う必要があるため
+	defer ole.CoUninitialize()
+
+	// エクセルオブジェクトの生成
+	e := excel.ThisApplication()
+	if e == nil {
+		return
+	}
+	ex := ExcelGraph{app: e}
+	// 生成してる感を出すためアプリケーションを表示する
+	ex.app.SetVisible(true)
+	// 既存のブックの読み込み
+	workbooks := ex.app.GetWorkbooks()
+	rp, _ := filepath.Abs("data/data.csv")
+	book := workbooks.Open(rp)
+	// シートの取得
+	sheets := book.GetWorksheets()
+	sheet := sheets.GetItem(1)
+	// 空グラフの生成
+	graph := sheet.ChartObjects().Add(30, 30, 500, 300)
+	graph.SetName("graph.goで生成したグラフ")
+
+	// 逐一描画すると遅いので、適当にまとめて描画する
+	ex.app.SetScreenUpdating(false)
+	// シート内容をグラフに変換
+	ex.sheetToChart(graph, sheet, []int{1, 2})
+	ex.app.SetScreenUpdating(true)
+
+	ex.app.SetScreenUpdating(false)
+	// タイトルを設定
+	ex.setGraphTitle(graph, "ぶりいくじっと")
+	// グラフオブジェクトをグラフシートに移動
+	chart := graph.GetChart()
+	chart.Location(excel.XlLocationAsNewSheet, "グラフその1")
+	ex.app.SetScreenUpdating(true)
+
+	// ブックを保存
+	ex.app.SetDisplayAlerts(false)
+	wp, _ := filepath.Abs("output.xlsx")
+	book.SaveAs(wp, excel.XlWorkbookDefault)
+	// ブックを閉じる
+	book.Close()
+	// Excelを閉じる
+	ex.app.Quit()
+	// メモリ解放みたいな感じ
+	ex.app.Release()
+}
+
 // グラフに描画するためのデータを取得
 func (ex *ExcelGraph) getGraphRange(sheet *excel.Worksheet) []GraphItem {
 	x := 1
@@ -161,55 +212,4 @@ func (ex *ExcelGraph) setGraphTitle(g *excel.Chart, title string) {
 	ct.SetText(title)
 	ct.SetPosition(excel.XlChartElementPositionAutomatic)
 	ct.SetIncludeInLayout(false) // タイトルをグラフと重ねる
-}
-
-func main() {
-	// COMの初期化
-	ole.CoInitializeEx(0, ole.COINIT_APARTMENTTHREADED|ole.COINIT_DISABLE_OLE1DDE)
-	// 確実に行う必要があるため
-	defer ole.CoUninitialize()
-
-	// エクセルオブジェクトの生成
-	e := excel.ThisApplication()
-	if e == nil {
-		return
-	}
-	ex := ExcelGraph{app: e}
-	// 生成してる感を出すためアプリケーションを表示する
-	ex.app.SetVisible(true)
-	// 既存のブックの読み込み
-	workbooks := ex.app.GetWorkbooks()
-	rp, _ := filepath.Abs("data/data.csv")
-	book := workbooks.Open(rp)
-	// シートの取得
-	sheets := book.GetWorksheets()
-	sheet := sheets.GetItem(1)
-	// 空グラフの生成
-	graph := sheet.ChartObjects().Add(30, 30, 500, 300)
-	graph.SetName("graph.goで生成したグラフ")
-
-	// 逐一描画すると遅いので、適当にまとめて描画する
-	ex.app.SetScreenUpdating(false)
-	// シート内容をグラフに変換
-	ex.sheetToChart(graph, sheet, []int{1, 2})
-	ex.app.SetScreenUpdating(true)
-
-	ex.app.SetScreenUpdating(false)
-	// タイトルを設定
-	ex.setGraphTitle(graph, "ぶりいくじっと")
-	// グラフオブジェクトをグラフシートに移動
-	chart := graph.GetChart()
-	chart.Location(excel.XlLocationAsNewSheet, "グラフその1")
-	ex.app.SetScreenUpdating(true)
-
-	// ブックを保存
-	ex.app.SetDisplayAlerts(false)
-	wp, _ := filepath.Abs("output.xlsx")
-	book.SaveAs(wp, excel.XlWorkbookDefault)
-	// ブックを閉じる
-	book.Close()
-	// Excelを閉じる
-	ex.app.Quit()
-	// メモリ解放みたいな感じ
-	ex.app.Release()
 }
