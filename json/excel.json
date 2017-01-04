@@ -1846,6 +1846,7 @@
 				},
 				"Calculate": {},
 				"Clear": {},
+				"ClearContents": {},
 				"Copy": {
 					"Arguments": [{"Type": "interface{}", "Variable": true, "Maximum": 1, "TypeCheck": ["int", "string", "*Range"]}]
 				},

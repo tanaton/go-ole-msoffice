@@ -2406,6 +2406,10 @@ func (a *Range) Clear() {
 	v, err := a.Obj.CallMethod("Clear")
 	a.Merge(v, err)
 }
+func (a *Range) ClearContents() {
+	v, err := a.Obj.CallMethod("ClearContents")
+	a.Merge(v, err)
+}
 func (a *Range) Copy(a0 ...interface{}) {
 	if len(a0) > 1 {
 		panic("Range.Copy : a0 : number of arguments is greater than 1")
