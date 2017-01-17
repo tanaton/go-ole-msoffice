@@ -2,7 +2,6 @@
 	"Package": "outlook",
 	"Object": "Outlook.Application",
 	"Const": {
-
 		"OlAccount": 105,
 		"OlAccountRuleCondition": 135,
 		"OlAccounts": 106,
@@ -175,7 +174,12 @@
 		"OlMeetingCanceled": 5,
 		"OlMeetingReceived": 3,
 		"OlMeetingReceivedAndCanceled": 7,
-		"OlNonMeeting": 0
+		"OlNonMeeting": 0,
+		"OlBusy": 2,
+		"OlFree": 0,
+		"OlOutOfOffice": 3,
+		"OlTentative": 1,
+		"OlWorkingElsewhere": 4
 	},
 	"RootFunction": {
 		"Name": "ThisApplication",
@@ -325,6 +329,10 @@
 				},
 				"Body": {
 					"Get": {"Return": "string"}
+				},
+				"BusyStatus": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
 				},
 				"CreationTime": {
 					"Get": {"Return": "time.Time"}

@@ -27,6 +27,7 @@ const (
 	OlAttachments                      = 18
 	OlAutoFormatRule                   = 147
 	OlAutoFormatRules                  = 148
+	OlBusy                             = 2
 	OlCalendarModule                   = 159
 	OlCalendarSharing                  = 151
 	OlCategories                       = 153
@@ -85,6 +86,7 @@ const (
 	OlFormDescription                  = 37
 	OlFormNameRuleCondition            = 131
 	OlFormRegion                       = 129
+	OlFree                             = 0
 	OlFromRssFeedRuleCondition         = 173
 	OlFromRuleCondition                = 132
 	OlImportanceRuleCondition          = 128
@@ -122,6 +124,7 @@ const (
 	OlNotesModule                      = 163
 	OlOrderField                       = 144
 	OlOrderFields                      = 145
+	OlOutOfOffice                      = 3
 	OlOutlookBarGroup                  = 66
 	OlOutlookBarGroups                 = 65
 	OlOutlookBarPane                   = 63
@@ -172,6 +175,7 @@ const (
 	OlTaskRequestDecline               = 52
 	OlTaskRequestUpdate                = 50
 	OlTasksModule                      = 161
+	OlTentative                        = 1
 	OlTextRuleCondition                = 134
 	OlUserDefinedProperties            = 172
 	OlUserDefinedProperty              = 171
@@ -182,6 +186,7 @@ const (
 	OlViewFields                       = 141
 	OlViewFont                         = 146
 	OlViews                            = 79
+	OlWorkingElsewhere                 = 4
 )
 
 type IDispatcher interface {
@@ -436,6 +441,15 @@ func (a *AppointmentItem) GetBody() string {
 	v, err := a.Obj.GetProperty("Body")
 	a.Merge(v, err)
 	return ToString(v, err)
+}
+func (a *AppointmentItem) GetBusyStatus() int {
+	v, err := a.Obj.GetProperty("BusyStatus")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *AppointmentItem) SetBusyStatus(a0 int) {
+	v, err := a.Obj.PutProperty("BusyStatus", a0)
+	a.Merge(v, err)
 }
 func (a *AppointmentItem) GetCreationTime() time.Time {
 	v, err := a.Obj.GetProperty("CreationTime")
