@@ -179,7 +179,11 @@
 		"OlFree": 0,
 		"OlOutOfOffice": 3,
 		"OlTentative": 1,
-		"OlWorkingElsewhere": 4
+		"OlWorkingElsewhere": 4,
+		"OlConfidential": 3,
+		"OlNormal": 0,
+		"OlPersonal": 1,
+		"OlPrivate": 2
 	},
 	"RootFunction": {
 		"Name": "ThisApplication",
@@ -377,7 +381,8 @@
 					"Get": {"Return": "int"}
 				},
 				"Sensitivity": {
-					"Get": {"Return": "int"}
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
 				},
 				"EntryID": {
 					"Get": {"Return": "string"}

@@ -46,6 +46,7 @@ const (
 	OlColumn                           = 154
 	OlColumnFormat                     = 149
 	OlColumns                          = 150
+	OlConfidential                     = 3
 	OlConflict                         = 102
 	OlConflicts                        = 103
 	OlContact                          = 40
@@ -120,6 +121,7 @@ const (
 	OlNavigationModules                = 156
 	OlNewItemAlertRuleAction           = 125
 	OlNonMeeting                       = 0
+	OlNormal                           = 0
 	OlNote                             = 44
 	OlNotesModule                      = 163
 	OlOrderField                       = 144
@@ -134,8 +136,10 @@ const (
 	OlOutspace                         = 180
 	OlPages                            = 36
 	OlPanes                            = 62
+	OlPersonal                         = 1
 	OlPlaySoundRuleAction              = 123
 	OlPost                             = 45
+	OlPrivate                          = 2
 	OlPropertyAccessor                 = 112
 	OlPropertyPageSite                 = 70
 	OlPropertyPages                    = 71
@@ -547,6 +551,10 @@ func (a *AppointmentItem) GetSensitivity() int {
 	v, err := a.Obj.GetProperty("Sensitivity")
 	a.Merge(v, err)
 	return (int)(v.Val)
+}
+func (a *AppointmentItem) SetSensitivity(a0 int) {
+	v, err := a.Obj.PutProperty("Sensitivity", a0)
+	a.Merge(v, err)
 }
 func (a *AppointmentItem) GetStart() time.Time {
 	v, err := a.Obj.GetProperty("Start")
