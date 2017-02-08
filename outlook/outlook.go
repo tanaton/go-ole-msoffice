@@ -88,6 +88,7 @@ const (
 	OlFormNameRuleCondition            = 131
 	OlFormRegion                       = 129
 	OlFree                             = 0
+	OlFriday                           = 32
 	OlFromRssFeedRuleCondition         = 173
 	OlFromRuleCondition                = 132
 	OlImportanceRuleCondition          = 128
@@ -111,6 +112,7 @@ const (
 	OlMeetingResponseNegative          = 55
 	OlMeetingResponsePositive          = 56
 	OlMeetingResponseTentative         = 57
+	OlMonday                           = 2
 	OlMoveOrCopyRuleAction             = 118
 	OlNamespace                        = 1
 	OlNavigationFolder                 = 167
@@ -147,6 +149,12 @@ const (
 	OlRecipient                        = 4
 	OlRecipients                       = 17
 	OlRecurrencePattern                = 28
+	OlRecursDaily                      = 0
+	OlRecursMonthNth                   = 3
+	OlRecursMonthly                    = 2
+	OlRecursWeekly                     = 1
+	OlRecursYearNth                    = 6
+	OlRecursYearly                     = 5
 	OlReminder                         = 101
 	OlReminders                        = 100
 	OlRemote                           = 47
@@ -159,6 +167,7 @@ const (
 	OlRuleCondition                    = 127
 	OlRuleConditions                   = 126
 	OlRules                            = 114
+	OlSaturday                         = 64
 	OlSearch                           = 77
 	OlSelectNamesDialog                = 109
 	OlSelection                        = 74
@@ -170,6 +179,7 @@ const (
 	OlStorageItem                      = 113
 	OlStore                            = 107
 	OlStores                           = 108
+	OlSunday                           = 1
 	OlSyncObject                       = 72
 	OlSyncObjects                      = 73
 	OlTable                            = 120
@@ -181,6 +191,8 @@ const (
 	OlTasksModule                      = 161
 	OlTentative                        = 1
 	OlTextRuleCondition                = 134
+	OlThursday                         = 16
+	OlTuesday                          = 4
 	OlUserDefinedProperties            = 172
 	OlUserDefinedProperty              = 171
 	OlUserProperties                   = 38
@@ -190,6 +202,7 @@ const (
 	OlViewFields                       = 141
 	OlViewFont                         = 146
 	OlViews                            = 79
+	OlWednesday                        = 8
 	OlWorkingElsewhere                 = 4
 )
 
@@ -347,6 +360,32 @@ func AppointmentItemCast(a Cast) (*AppointmentItem, error) {
 	}, nil
 }
 
+type Exception struct {
+	Outlook
+}
+
+func ExceptionCast(a Cast) (*Exception, error) {
+	if a.GetClass() != OlException {
+		return nil, Error("Cast error : Exception")
+	}
+	return &Exception{
+		Outlook: a.Extends(),
+	}, nil
+}
+
+type Exceptions struct {
+	Outlook
+}
+
+func ExceptionsCast(a Cast) (*Exceptions, error) {
+	if a.GetClass() != OlExceptions {
+		return nil, Error("Cast error : Exceptions")
+	}
+	return &Exceptions{
+		Outlook: a.Extends(),
+	}, nil
+}
+
 type Folder struct {
 	Outlook
 }
@@ -398,6 +437,19 @@ func NamespaceCast(a Cast) (*Namespace, error) {
 		return nil, Error("Cast error : Namespace")
 	}
 	return &Namespace{
+		Outlook: a.Extends(),
+	}, nil
+}
+
+type RecurrencePattern struct {
+	Outlook
+}
+
+func RecurrencePatternCast(a Cast) (*RecurrencePattern, error) {
+	if a.GetClass() != OlRecurrencePattern {
+		return nil, Error("Cast error : RecurrencePattern")
+	}
+	return &RecurrencePattern{
 		Outlook: a.Extends(),
 	}, nil
 }
@@ -474,6 +526,11 @@ func (a *AppointmentItem) GetEntryID() string {
 	v, err := a.Obj.GetProperty("EntryID")
 	a.Merge(v, err)
 	return ToString(v, err)
+}
+func (a *AppointmentItem) GetIsRecurring() bool {
+	v, err := a.Obj.GetProperty("IsRecurring")
+	a.Merge(v, err)
+	return ToBool(v, err)
 }
 func (a *AppointmentItem) GetLastModificationTime() time.Time {
 	v, err := a.Obj.GetProperty("LastModificationTime")
@@ -565,6 +622,31 @@ func (a *AppointmentItem) GetSubject() string {
 	v, err := a.Obj.GetProperty("Subject")
 	a.Merge(v, err)
 	return ToString(v, err)
+}
+func (a *AppointmentItem) GetRecurrencePattern() *RecurrencePattern {
+	return &RecurrencePattern{
+		Outlook: a.Merge(a.Obj.CallMethod("GetRecurrencePattern")),
+	}
+}
+func (a *Exception) GetAppointmentItem() *AppointmentItem {
+	return &AppointmentItem{
+		Outlook: a.Merge(a.Obj.GetProperty("AppointmentItem")),
+	}
+}
+func (a *Exception) GetOriginalDate() time.Time {
+	v, err := a.Obj.GetProperty("OriginalDate")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *Exceptions) GetCount() int {
+	v, err := a.Obj.GetProperty("Count")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Exceptions) Item(a0 int) *Exception {
+	return &Exception{
+		Outlook: a.Merge(a.Obj.CallMethod("Item", a0)),
+	}
 }
 func (a *Folder) GetFolders() *Folders {
 	return &Folders{
@@ -660,8 +742,8 @@ func (a *Items) ResetColumns() {
 	v, err := a.Obj.CallMethod("ResetColumns")
 	a.Merge(v, err)
 }
-func (a *Items) Restrict(a0 string) *Item {
-	return &Item{
+func (a *Items) Restrict(a0 string) *Items {
+	return &Items{
 		Outlook: a.Merge(a.Obj.CallMethod("Restrict", a0)),
 	}
 }
@@ -681,5 +763,141 @@ func (a *Namespace) GetFolders() *Folders {
 func (a *Namespace) GetDefaultFolder(a0 int) *Folder {
 	return &Folder{
 		Outlook: a.Merge(a.Obj.CallMethod("GetDefaultFolder", a0)),
+	}
+}
+func (a *RecurrencePattern) GetDayOfMonth() int {
+	v, err := a.Obj.GetProperty("DayOfMonth")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *RecurrencePattern) SetDayOfMonth(a0 int) {
+	v, err := a.Obj.PutProperty("DayOfMonth", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetDayOfWeekMask() int {
+	v, err := a.Obj.GetProperty("DayOfWeekMask")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *RecurrencePattern) SetDayOfWeekMask(a0 int) {
+	v, err := a.Obj.PutProperty("DayOfWeekMask", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetDuration() int {
+	v, err := a.Obj.GetProperty("Duration")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *RecurrencePattern) SetDuration(a0 int) {
+	v, err := a.Obj.PutProperty("Duration", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetEndTime() time.Time {
+	v, err := a.Obj.GetProperty("EndTime")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *RecurrencePattern) SetEndTime(a0 time.Time) {
+	v, err := a.Obj.PutProperty("EndTime", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetExceptions() *Exceptions {
+	return &Exceptions{
+		Outlook: a.Merge(a.Obj.GetProperty("Exceptions")),
+	}
+}
+func (a *RecurrencePattern) GetInstance() int {
+	v, err := a.Obj.GetProperty("Instance")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *RecurrencePattern) SetInstance(a0 int) {
+	v, err := a.Obj.PutProperty("Instance", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetInterval() int {
+	v, err := a.Obj.GetProperty("Interval")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *RecurrencePattern) SetInterval(a0 int) {
+	v, err := a.Obj.PutProperty("Interval", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetMonthOfYear() int {
+	v, err := a.Obj.GetProperty("MonthOfYear")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *RecurrencePattern) SetMonthOfYear(a0 int) {
+	v, err := a.Obj.PutProperty("MonthOfYear", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetNoEndDate() bool {
+	v, err := a.Obj.GetProperty("NoEndDate")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *RecurrencePattern) SetNoEndDate(a0 bool) {
+	v, err := a.Obj.PutProperty("NoEndDate", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetOccurrences() int {
+	v, err := a.Obj.GetProperty("Occurrences")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *RecurrencePattern) SetOccurrences(a0 int) {
+	v, err := a.Obj.PutProperty("Occurrences", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetPatternEndDate() time.Time {
+	v, err := a.Obj.GetProperty("PatternEndDate")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *RecurrencePattern) SetPatternEndDate(a0 time.Time) {
+	v, err := a.Obj.PutProperty("PatternEndDate", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetPatternStartDate() time.Time {
+	v, err := a.Obj.GetProperty("PatternStartDate")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *RecurrencePattern) SetPatternStartDate(a0 time.Time) {
+	v, err := a.Obj.PutProperty("PatternStartDate", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetRecurrenceType() int {
+	v, err := a.Obj.GetProperty("RecurrenceType")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *RecurrencePattern) SetRecurrenceType(a0 int) {
+	v, err := a.Obj.PutProperty("RecurrenceType", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetRegenerate() bool {
+	v, err := a.Obj.GetProperty("Regenerate")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *RecurrencePattern) SetRegenerate(a0 bool) {
+	v, err := a.Obj.PutProperty("Regenerate", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetStartTime() time.Time {
+	v, err := a.Obj.GetProperty("StartTime")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *RecurrencePattern) SetStartTime(a0 time.Time) {
+	v, err := a.Obj.PutProperty("StartTime", a0)
+	a.Merge(v, err)
+}
+func (a *RecurrencePattern) GetOccurrence(a0 time.Time) *AppointmentItem {
+	return &AppointmentItem{
+		Outlook: a.Merge(a.Obj.CallMethod("GetOccurrence", a0)),
 	}
 }

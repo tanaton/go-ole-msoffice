@@ -183,7 +183,20 @@
 		"OlConfidential": 3,
 		"OlNormal": 0,
 		"OlPersonal": 1,
-		"OlPrivate": 2
+		"OlPrivate": 2,
+		"OlRecursDaily": 0,
+		"OlRecursMonthly": 2,
+		"OlRecursMonthNth": 3,
+		"OlRecursWeekly": 1,
+		"OlRecursYearly": 5,
+		"OlRecursYearNth": 6,
+		"OlSunday": 1,
+		"OlMonday": 2,
+		"OlTuesday": 4,
+		"OlWednesday": 8,
+		"OlThursday": 16,
+		"OlFriday": 32,
+		"OlSaturday": 64
 	},
 	"RootFunction": {
 		"Name": "ThisApplication",
@@ -287,7 +300,7 @@
 				},
 				"Restrict": {
 					"Arguments": [{"Type": "string"}],
-					"Return": "*Item"
+					"Return": "*Items"
 				},
 				"FindNext": {
 					"Return": "*Item"
@@ -353,6 +366,9 @@
 				"Duration": {
 					"Get": {"Return": "int"}
 				},
+				"IsRecurring": {
+					"Get": {"Return": "bool"}
+				},
 				"LastModificationTime": {
 					"Get": {"Return": "time.Time"}
 				},
@@ -398,6 +414,106 @@
 				},
 				"AllDayEvent": {
 					"Get": {"Return": "bool"}
+				}
+			},
+			"Method": {
+				"GetRecurrencePattern": {
+					"Return": "*RecurrencePattern"
+				}
+			}
+		},
+		"RecurrencePattern": {
+			"TypeConst": "OlRecurrencePattern",
+			"Property": {
+				"DayOfMonth": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"DayOfWeekMask": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"Duration": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"EndTime": {
+					"Get": {"Return": "time.Time"},
+					"Set": {"Arguments": [{"Type": "time.Time"}]}
+				},
+				"Exceptions": {
+					"Get": {"Return": "*Exceptions"}
+				},
+				"Instance": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"Interval": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"MonthOfYear": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"NoEndDate": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Occurrences": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"PatternEndDate": {
+					"Get": {"Return": "time.Time"},
+					"Set": {"Arguments": [{"Type": "time.Time"}]}
+				},
+				"PatternStartDate": {
+					"Get": {"Return": "time.Time"},
+					"Set": {"Arguments": [{"Type": "time.Time"}]}
+				},
+				"RecurrenceType": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"Regenerate": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"StartTime": {
+					"Get": {"Return": "time.Time"},
+					"Set": {"Arguments": [{"Type": "time.Time"}]}
+				}
+			},
+			"Method": {
+				"GetOccurrence": {
+					"Arguments": [{"Type": "time.Time"}],
+					"Return": "*AppointmentItem"
+				}
+			}
+		},
+		"Exceptions": {
+			"TypeConst": "OlExceptions",
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				}
+			},
+			"Method": {
+				"Item": {
+					"Arguments": [{"Type": "int"}],
+					"Return": "*Exception"
+				}
+			}
+		},
+		"Exception": {
+			"TypeConst": "OlException",
+			"Property": {
+				"AppointmentItem": {
+					"Get": {"Return": "*AppointmentItem"}
+				},
+				"OriginalDate": {
+					"Get": {"Return": "time.Time"}
 				}
 			}
 		}
