@@ -242,7 +242,97 @@
 				"GetDefaultFolder": {
 					"Arguments": [{"Type": "int"}],
 					"Return": "*Folder"
+				},
+				"GetSharedDefaultFolder": {
+					"Arguments": [{"Type": "*Recipient"}, {"Type": "int"}],
+					"Return": "*Folder"
+				},
+				"CreateRecipient": {
+					"Arguments": [{"Type": "string"}],
+					"Return": "*Recipient"
 				}
+			}
+		},
+		"Recipients": {
+			"TypeConst": "OlRecipients",
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				}
+			},
+			"Method": {
+				"Add": {
+					"Arguments": [{"Type": "string"}],
+					"Return": "*Recipient"
+				},
+				"Item": {
+					"Arguments": [{"Type": "int"}],
+					"Return": "*Recipient"
+				},
+				"Remove": {
+					"Arguments": [{"Type": "int"}]
+				},
+				"ResolveAll": {
+					"Return": "bool"
+				}
+			}
+		},
+		"Recipient": {
+			"TypeConst": "OlRecipient",
+			"Property": {
+				"Address": {
+					"Get": {"Return": "string"}
+				},
+				"AutoResponse": {
+					"Get": {"Return": "string"},
+					"Set": {"Arguments": [{"Type": "string"}]}
+				},
+				"DisplayType": {
+					"Get": {"Return": "int"}
+				},
+				"EntryID": {
+					"Get": {"Return": "string"}
+				},
+				"Index": {
+					"Get": {"Return": "int"}
+				},
+				"MeetingResponseStatus": {
+					"Get": {"Return": "int"}
+				},
+				"Name": {
+					"Get": {"Return": "string"}
+				},
+				"Resolved": {
+					"Get": {"Return": "bool"}
+				},
+				"Sendable": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"TrackingStatus": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"TrackingStatusTime": {
+					"Get": {"Return": "time.Time"},
+					"Set": {"Arguments": [{"Type": "time.Time"}]}
+				},
+				"Type": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				}
+			},
+			"Method": {
+				"Delete": {},
+				"FreeBusy": {
+					"Arguments": [
+						{"Type": "time.Time"},
+						{"Type": "int"},
+						{"Type": "bool", "Variable": true, "Maximum": 1}
+					],
+					"Return": "string"
+				},
+				"Resolve": {"Return": "bool"}
 			}
 		},
 		"Folders": {

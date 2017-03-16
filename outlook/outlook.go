@@ -441,6 +441,32 @@ func NamespaceCast(a Cast) (*Namespace, error) {
 	}, nil
 }
 
+type Recipient struct {
+	Outlook
+}
+
+func RecipientCast(a Cast) (*Recipient, error) {
+	if a.GetClass() != OlRecipient {
+		return nil, Error("Cast error : Recipient")
+	}
+	return &Recipient{
+		Outlook: a.Extends(),
+	}, nil
+}
+
+type Recipients struct {
+	Outlook
+}
+
+func RecipientsCast(a Cast) (*Recipients, error) {
+	if a.GetClass() != OlRecipients {
+		return nil, Error("Cast error : Recipients")
+	}
+	return &Recipients{
+		Outlook: a.Extends(),
+	}, nil
+}
+
 type RecurrencePattern struct {
 	Outlook
 }
@@ -760,10 +786,147 @@ func (a *Namespace) GetFolders() *Folders {
 		Outlook: a.Merge(a.Obj.GetProperty("Folders")),
 	}
 }
+func (a *Namespace) CreateRecipient(a0 string) *Recipient {
+	return &Recipient{
+		Outlook: a.Merge(a.Obj.CallMethod("CreateRecipient", a0)),
+	}
+}
 func (a *Namespace) GetDefaultFolder(a0 int) *Folder {
 	return &Folder{
 		Outlook: a.Merge(a.Obj.CallMethod("GetDefaultFolder", a0)),
 	}
+}
+func (a *Namespace) GetSharedDefaultFolder(a0 *Recipient, a1 int) *Folder {
+	return &Folder{
+		Outlook: a.Merge(a.Obj.CallMethod("GetSharedDefaultFolder", a0.Obj, a1)),
+	}
+}
+func (a *Recipient) GetAddress() string {
+	v, err := a.Obj.GetProperty("Address")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Recipient) GetAutoResponse() string {
+	v, err := a.Obj.GetProperty("AutoResponse")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Recipient) SetAutoResponse(a0 string) {
+	v, err := a.Obj.PutProperty("AutoResponse", a0)
+	a.Merge(v, err)
+}
+func (a *Recipient) GetDisplayType() int {
+	v, err := a.Obj.GetProperty("DisplayType")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Recipient) GetEntryID() string {
+	v, err := a.Obj.GetProperty("EntryID")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Recipient) GetIndex() int {
+	v, err := a.Obj.GetProperty("Index")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Recipient) GetMeetingResponseStatus() int {
+	v, err := a.Obj.GetProperty("MeetingResponseStatus")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Recipient) GetName() string {
+	v, err := a.Obj.GetProperty("Name")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Recipient) GetResolved() bool {
+	v, err := a.Obj.GetProperty("Resolved")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Recipient) GetSendable() bool {
+	v, err := a.Obj.GetProperty("Sendable")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Recipient) SetSendable(a0 bool) {
+	v, err := a.Obj.PutProperty("Sendable", a0)
+	a.Merge(v, err)
+}
+func (a *Recipient) GetTrackingStatus() int {
+	v, err := a.Obj.GetProperty("TrackingStatus")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Recipient) SetTrackingStatus(a0 int) {
+	v, err := a.Obj.PutProperty("TrackingStatus", a0)
+	a.Merge(v, err)
+}
+func (a *Recipient) GetTrackingStatusTime() time.Time {
+	v, err := a.Obj.GetProperty("TrackingStatusTime")
+	a.Merge(v, err)
+	return ToTime(v, err)
+}
+func (a *Recipient) SetTrackingStatusTime(a0 time.Time) {
+	v, err := a.Obj.PutProperty("TrackingStatusTime", a0)
+	a.Merge(v, err)
+}
+func (a *Recipient) GetType() int {
+	v, err := a.Obj.GetProperty("Type")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Recipient) SetType(a0 int) {
+	v, err := a.Obj.PutProperty("Type", a0)
+	a.Merge(v, err)
+}
+func (a *Recipient) Delete() {
+	v, err := a.Obj.CallMethod("Delete")
+	a.Merge(v, err)
+}
+func (a *Recipient) FreeBusy(a0 time.Time, a1 int, a2 ...bool) string {
+	av := make([]interface{}, 0, 4)
+	av = append(av, a0)
+	av = append(av, a1)
+	if len(a2) > 1 {
+		panic("Recipient.FreeBusy : a2 : number of arguments is greater than 1")
+	}
+	for _, it := range a2 {
+		av = append(av, it)
+	}
+	v, err := a.Obj.CallMethod("FreeBusy", av...)
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *Recipient) Resolve() bool {
+	v, err := a.Obj.CallMethod("Resolve")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *Recipients) GetCount() int {
+	v, err := a.Obj.GetProperty("Count")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *Recipients) Add(a0 string) *Recipient {
+	return &Recipient{
+		Outlook: a.Merge(a.Obj.CallMethod("Add", a0)),
+	}
+}
+func (a *Recipients) Item(a0 int) *Recipient {
+	return &Recipient{
+		Outlook: a.Merge(a.Obj.CallMethod("Item", a0)),
+	}
+}
+func (a *Recipients) Remove(a0 int) {
+	v, err := a.Obj.CallMethod("Remove", a0)
+	a.Merge(v, err)
+}
+func (a *Recipients) ResolveAll() bool {
+	v, err := a.Obj.CallMethod("ResolveAll")
+	a.Merge(v, err)
+	return ToBool(v, err)
 }
 func (a *RecurrencePattern) GetDayOfMonth() int {
 	v, err := a.Obj.GetProperty("DayOfMonth")
