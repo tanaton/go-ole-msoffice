@@ -1964,6 +1964,26 @@ func (a *Chart) Axes(a0 int, a1 int) *Axis {
 		Excel: a.Merge(a.Obj.CallMethod("Axes", a0, a1)),
 	}
 }
+func (a *Chart) Export(a0 string, a1 ...interface{}) bool {
+	av := make([]interface{}, 0, 4)
+	av = append(av, a0)
+	if len(a1) > 2 {
+		panic("Chart.Export : a1 : number of arguments is greater than 2")
+	}
+	for _, it := range a1 {
+		switch it.(type) {
+		case string:
+			av = append(av, it)
+		case bool:
+			av = append(av, it)
+		default:
+			panic("Chart.Export : a1 : type given for the argument is different")
+		}
+	}
+	v, err := a.Obj.CallMethod("Export", av...)
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
 func (a *Chart) Location(a0 ...interface{}) *Chart {
 	return &Chart{
 		Excel: a.Merge(a.Obj.CallMethod("Location", a0...)),

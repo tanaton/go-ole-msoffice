@@ -1942,19 +1942,26 @@
 					],
 					"Return": "*Chart"
 				},
-				"SetSourceData": {
-					"Arguments": [
-						{"Type": "*Range"},
-						{"Type": "int"}
-					],
-					"Return": "*Chart"
-				},
 				"Axes": {
 					"Arguments": [
 						{"Type": "int"},
 						{"Type": "int"}
 					],
 					"Return": "*Axis"
+				},
+				"Export": {
+					"Arguments": [
+						{"Type": "string"},
+						{"Type": "interface{}", "Variable": true, "Maximum": 2, "TypeCheck": ["string", "bool"]}
+					],
+					"Return": "bool"
+				},
+				"SetSourceData": {
+					"Arguments": [
+						{"Type": "*Range"},
+						{"Type": "int"}
+					],
+					"Return": "*Chart"
 				},
 				"SeriesCollection": {
 					"Return": "*SeriesCollection"
