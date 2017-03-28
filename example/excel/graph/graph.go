@@ -108,7 +108,7 @@ func (ex *ExcelGraph) getGraphRange(sheet *excel.Worksheet) []GraphItem {
 }
 
 // シートからグラフを作る
-func (ex *ExcelGraph) sheetToChart(g *excel.Chart, sheet *excel.Worksheet, secondary []int) {
+func (ex *ExcelGraph) sheetToChart(g *excel.ChartObject, sheet *excel.Worksheet, secondary []int) {
 	j := 1
 	arr := ex.getGraphRange(sheet)
 	if len(arr) <= 0 {
@@ -172,7 +172,7 @@ func (ex *ExcelGraph) sheetToChart(g *excel.Chart, sheet *excel.Worksheet, secon
 }
 
 // グラフの軸を設定
-func (ex *ExcelGraph) setGraphAxis(g *excel.Chart, name, axistitle string) {
+func (ex *ExcelGraph) setGraphAxis(g *excel.ChartObject, name, axistitle string) {
 	chart := g.GetChart()
 	cp := chart.Axes(excel.XlCategory, excel.XlPrimary)
 	vp := chart.Axes(excel.XlValue, excel.XlPrimary)
@@ -195,7 +195,7 @@ func (ex *ExcelGraph) setGraphAxis(g *excel.Chart, name, axistitle string) {
 }
 
 // 指定した要素を第二軸に移動
-func (ex *ExcelGraph) setGraphAxisSecondary(g *excel.Chart, name string) {
+func (ex *ExcelGraph) setGraphAxisSecondary(g *excel.ChartObject, name string) {
 	chart := g.GetChart()
 	// 2軸目のY軸ラベルを表示
 	vs := chart.Axes(excel.XlValue, excel.XlSecondary)
@@ -205,7 +205,7 @@ func (ex *ExcelGraph) setGraphAxisSecondary(g *excel.Chart, name string) {
 }
 
 // タイトルを設定
-func (ex *ExcelGraph) setGraphTitle(g *excel.Chart, title string) {
+func (ex *ExcelGraph) setGraphTitle(g *excel.ChartObject, title string) {
 	chart := g.GetChart()
 	chart.SetHasTitle(true)
 	ct := chart.GetChartTitle()

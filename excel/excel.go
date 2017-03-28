@@ -1603,6 +1603,12 @@ type AxisTitle struct {
 type Chart struct {
 	Excel
 }
+type ChartObject struct {
+	Excel
+}
+type ChartObjects struct {
+	Excel
+}
 type ChartTitle struct {
 	Excel
 }
@@ -1917,11 +1923,6 @@ func (a *AxisTitle) SetText(a0 string) {
 	v, err := a.Obj.PutProperty("Text", a0)
 	a.Merge(v, err)
 }
-func (a *Chart) GetChart() *Chart {
-	return &Chart{
-		Excel: a.Merge(a.Obj.GetProperty("Chart")),
-	}
-}
 func (a *Chart) GetChartTitle() *ChartTitle {
 	return &ChartTitle{
 		Excel: a.Merge(a.Obj.GetProperty("ChartTitle")),
@@ -1997,6 +1998,261 @@ func (a *Chart) SeriesCollection() *SeriesCollection {
 func (a *Chart) SetSourceData(a0 *Range, a1 int) *Chart {
 	return &Chart{
 		Excel: a.Merge(a.Obj.CallMethod("SetSourceData", a0.Obj, a1)),
+	}
+}
+func (a *ChartObject) GetBottomRightCell() *Range {
+	return &Range{
+		Excel: a.Merge(a.Obj.GetProperty("BottomRightCell")),
+	}
+}
+func (a *ChartObject) GetChart() *Chart {
+	return &Chart{
+		Excel: a.Merge(a.Obj.GetProperty("Chart")),
+	}
+}
+func (a *ChartObject) GetCreator() int {
+	v, err := a.Obj.GetProperty("Creator")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *ChartObject) GetHeight() float64 {
+	v, err := a.Obj.GetProperty("Height")
+	a.Merge(v, err)
+	return (float64)(v.Val)
+}
+func (a *ChartObject) SetHeight(a0 float64) {
+	v, err := a.Obj.PutProperty("Height", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetIndex() int {
+	v, err := a.Obj.GetProperty("Index")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *ChartObject) GetLeft() float64 {
+	v, err := a.Obj.GetProperty("Left")
+	a.Merge(v, err)
+	return (float64)(v.Val)
+}
+func (a *ChartObject) SetLeft(a0 float64) {
+	v, err := a.Obj.PutProperty("Left", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetLocked() bool {
+	v, err := a.Obj.GetProperty("Locked")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *ChartObject) SetLocked(a0 bool) {
+	v, err := a.Obj.PutProperty("Locked", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetName() string {
+	v, err := a.Obj.GetProperty("Name")
+	a.Merge(v, err)
+	return ToString(v, err)
+}
+func (a *ChartObject) SetName(a0 string) {
+	v, err := a.Obj.PutProperty("Name", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetPlacement() int {
+	v, err := a.Obj.GetProperty("Placement")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *ChartObject) SetPlacement(a0 int) {
+	v, err := a.Obj.PutProperty("Placement", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetPrintObject() bool {
+	v, err := a.Obj.GetProperty("PrintObject")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *ChartObject) SetPrintObject(a0 bool) {
+	v, err := a.Obj.PutProperty("PrintObject", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetShadow() bool {
+	v, err := a.Obj.GetProperty("Shadow")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *ChartObject) SetShadow(a0 bool) {
+	v, err := a.Obj.PutProperty("Shadow", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetTop() float64 {
+	v, err := a.Obj.GetProperty("Top")
+	a.Merge(v, err)
+	return (float64)(v.Val)
+}
+func (a *ChartObject) SetTop(a0 float64) {
+	v, err := a.Obj.PutProperty("Top", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetTopLeftCell() *Range {
+	return &Range{
+		Excel: a.Merge(a.Obj.GetProperty("TopLeftCell")),
+	}
+}
+func (a *ChartObject) GetVisible() bool {
+	v, err := a.Obj.GetProperty("Visible")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *ChartObject) SetVisible(a0 bool) {
+	v, err := a.Obj.PutProperty("Visible", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetWidth() float64 {
+	v, err := a.Obj.GetProperty("Width")
+	a.Merge(v, err)
+	return (float64)(v.Val)
+}
+func (a *ChartObject) SetWidth(a0 float64) {
+	v, err := a.Obj.PutProperty("Width", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObject) GetZOrder() int {
+	v, err := a.Obj.GetProperty("ZOrder")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *ChartObject) BringToFront() {
+	v, err := a.Obj.CallMethod("BringToFront")
+	a.Merge(v, err)
+}
+func (a *ChartObject) Copy() {
+	v, err := a.Obj.CallMethod("Copy")
+	a.Merge(v, err)
+}
+func (a *ChartObject) CopyPicture(a0 ...int) {
+	av := make([]interface{}, 0, 4)
+	if len(a0) > 2 {
+		panic("ChartObject.CopyPicture : a0 : number of arguments is greater than 2")
+	}
+	for _, it := range a0 {
+		av = append(av, it)
+	}
+	v, err := a.Obj.CallMethod("CopyPicture", av...)
+	a.Merge(v, err)
+}
+func (a *ChartObject) Cut() {
+	v, err := a.Obj.CallMethod("Cut")
+	a.Merge(v, err)
+}
+func (a *ChartObject) Delete() {
+	v, err := a.Obj.CallMethod("Delete")
+	a.Merge(v, err)
+}
+func (a *ChartObject) Duplicate() *ChartObject {
+	return &ChartObject{
+		Excel: a.Merge(a.Obj.CallMethod("Duplicate")),
+	}
+}
+func (a *ChartObject) SendToBack() {
+	v, err := a.Obj.CallMethod("SendToBack")
+	a.Merge(v, err)
+}
+func (a *ChartObjects) GetCount() int {
+	v, err := a.Obj.GetProperty("Count")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *ChartObjects) GetCreator() int {
+	v, err := a.Obj.GetProperty("Creator")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *ChartObjects) GetHeight() float64 {
+	v, err := a.Obj.GetProperty("Height")
+	a.Merge(v, err)
+	return (float64)(v.Val)
+}
+func (a *ChartObjects) SetHeight(a0 float64) {
+	v, err := a.Obj.PutProperty("Height", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObjects) GetLeft() float64 {
+	v, err := a.Obj.GetProperty("Left")
+	a.Merge(v, err)
+	return (float64)(v.Val)
+}
+func (a *ChartObjects) SetLeft(a0 float64) {
+	v, err := a.Obj.PutProperty("Left", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObjects) GetLocked() bool {
+	v, err := a.Obj.GetProperty("Locked")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *ChartObjects) SetLocked(a0 bool) {
+	v, err := a.Obj.PutProperty("Locked", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObjects) GetPlacement() int {
+	v, err := a.Obj.GetProperty("Placement")
+	a.Merge(v, err)
+	return (int)(v.Val)
+}
+func (a *ChartObjects) SetPlacement(a0 int) {
+	v, err := a.Obj.PutProperty("Placement", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObjects) GetPrintObject() bool {
+	v, err := a.Obj.GetProperty("PrintObject")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *ChartObjects) SetPrintObject(a0 bool) {
+	v, err := a.Obj.PutProperty("PrintObject", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObjects) GetTop() float64 {
+	v, err := a.Obj.GetProperty("Top")
+	a.Merge(v, err)
+	return (float64)(v.Val)
+}
+func (a *ChartObjects) SetTop(a0 float64) {
+	v, err := a.Obj.PutProperty("Top", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObjects) GetVisible() bool {
+	v, err := a.Obj.GetProperty("Visible")
+	a.Merge(v, err)
+	return ToBool(v, err)
+}
+func (a *ChartObjects) SetVisible(a0 bool) {
+	v, err := a.Obj.PutProperty("Visible", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObjects) GetWidth() float64 {
+	v, err := a.Obj.GetProperty("Width")
+	a.Merge(v, err)
+	return (float64)(v.Val)
+}
+func (a *ChartObjects) SetWidth(a0 float64) {
+	v, err := a.Obj.PutProperty("Width", a0)
+	a.Merge(v, err)
+}
+func (a *ChartObjects) Add(a0 int, a1 int, a2 int, a3 int) *ChartObject {
+	return &ChartObject{
+		Excel: a.Merge(a.Obj.CallMethod("Add", a0, a1, a2, a3)),
+	}
+}
+func (a *ChartObjects) Item(a0 interface{}) *ChartObject {
+	switch a0.(type) {
+	case int:
+	case string:
+	case *ole.VARIANT:
+	default:
+		panic("ChartObjects.Item : a0 : type given for the argument is different")
+	}
+	return &ChartObject{
+		Excel: a.Merge(a.Obj.CallMethod("Item", a0)),
 	}
 }
 func (a *ChartTitle) GetIncludeInLayout() bool {
@@ -2837,8 +3093,8 @@ func (a *Worksheet) Calculate() {
 	v, err := a.Obj.CallMethod("Calculate")
 	a.Merge(v, err)
 }
-func (a *Worksheet) ChartObjects() *Chart {
-	return &Chart{
+func (a *Worksheet) ChartObjects() *ChartObjects {
+	return &ChartObjects{
 		Excel: a.Merge(a.Obj.CallMethod("ChartObjects")),
 	}
 }

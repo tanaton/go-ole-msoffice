@@ -1725,7 +1725,7 @@
 				},
 				"Delete": {"Return": "bool"},
 				"ChartObjects": {
-					"Return": "*Chart"
+					"Return": "*ChartObjects"
 				},
 				"Calculate": {},
 				"Move": {
@@ -1883,6 +1883,138 @@
 				"Select": {}
 			}
 		},
+		"ChartObjects": {
+			"Property": {
+				"Count": {
+					"Get": {"Return": "int"}
+				},
+				"Creator": {
+					"Get": {"Return": "int"}
+				},
+				"Height": {
+					"Get": {"Return": "float64"},
+					"Set": {"Arguments": [{"Type": "float64"}]}
+				},
+				"Left": {
+					"Get": {"Return": "float64"},
+					"Set": {"Arguments": [{"Type": "float64"}]}
+				},
+				"Locked": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Placement": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"PrintObject": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Top": {
+					"Get": {"Return": "float64"},
+					"Set": {"Arguments": [{"Type": "float64"}]}
+				},
+				"Visible": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Width": {
+					"Get": {"Return": "float64"},
+					"Set": {"Arguments": [{"Type": "float64"}]}
+				}
+			},
+			"Method": {
+				"Add": {
+					"Arguments": [
+						{"Type": "int"},
+						{"Type": "int"},
+						{"Type": "int"},
+						{"Type": "int"}
+					],
+					"Return": "*ChartObject"
+				},
+				"Item": {
+					"Arguments": [{"Type": "interface{}", "TypeCheck": ["int", "string", "*ole.VARIANT"]}],
+					"Return": "*ChartObject"
+				}
+			}
+		},
+		"ChartObject": {
+			"Property": {
+				"BottomRightCell": {
+					"Get": {"Return": "*Range"}
+				},
+				"Chart": {
+					"Get": {"Return": "*Chart"}
+				},
+				"Creator": {
+					"Get": {"Return": "int"}
+				},
+				"Height": {
+					"Get": {"Return": "float64"},
+					"Set": {"Arguments": [{"Type": "float64"}]}
+				},
+				"Index": {
+					"Get": {"Return": "int"}
+				},
+				"Left": {
+					"Get": {"Return": "float64"},
+					"Set": {"Arguments": [{"Type": "float64"}]}
+				},
+				"Locked": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Name": {
+					"Get": {"Return": "string"},
+					"Set": {"Arguments": [{"Type": "string"}]}
+				},
+				"Placement": {
+					"Get": {"Return": "int"},
+					"Set": {"Arguments": [{"Type": "int"}]}
+				},
+				"PrintObject": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Shadow": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Top": {
+					"Get": {"Return": "float64"},
+					"Set": {"Arguments": [{"Type": "float64"}]}
+				},
+				"TopLeftCell": {
+					"Get": {"Return": "*Range"}
+				},
+				"Visible": {
+					"Get": {"Return": "bool"},
+					"Set": {"Arguments": [{"Type": "bool"}]}
+				},
+				"Width": {
+					"Get": {"Return": "float64"},
+					"Set": {"Arguments": [{"Type": "float64"}]}
+				},
+				"ZOrder": {
+					"Get": {"Return": "int"}
+				}
+			},
+			"Method": {
+				"BringToFront": {},
+				"Copy": {},
+				"CopyPicture": {
+					"Arguments": [{"Type": "int", "Variable": true, "Maximum": 2}]
+				},
+				"Cut": {},
+				"Delete": {},
+				"Duplicate": {
+					"Return": "*ChartObject"
+				},
+				"SendToBack": {}
+			}
+		},
 		"Charts": {
 			"Property": {
 				"Count": {
@@ -1911,9 +2043,6 @@
 		},
 		"Chart": {
 			"Property": {
-				"Chart": {
-					"Get": {"Return": "*Chart"}
-				},
 				"ChartType": {
 					"Set": {"Arguments": [{"Type": "int"}]}
 				},
