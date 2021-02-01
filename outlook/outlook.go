@@ -2,10 +2,11 @@
 package outlook
 
 import (
-	ole "github.com/go-ole/go-ole"
-	"github.com/go-ole/go-ole/oleutil"
 	"time"
 	"unsafe"
+
+	ole "github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 const (
